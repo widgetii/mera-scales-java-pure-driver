@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="ru.aplix.mera.pjcomm" default="package">
+	
+	<property name="compile.classpath" value="../lib/jna.jar"/>
+
+	<target name="compile" description="Compiles everything">
+		<mkdir dir="bin"/>
+		<javac
+			srcdir="src" 
+			destdir="bin"
+			debug="on"
+			debuglevel="lines,vars,source"
+			encoding="UTF-8"
+			taskname="${ant.project.name}"
+			includeantruntime="false">
+			<classpath>
+				<pathelement path="${compile.classpath}"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="package" depends="compile" description="Packages a JAR file">
+		<mkdir dir="../target"/>
+		<jar destfile="../target/${ant.project.name}.jar">
+			<manifest>
+				<attribute name="Class-Path" value="jna.jar"/>
+			</manifest>
+			<fileset dir="bin"/>
+		</jar>
+	</target>
+
+	<target name="clean" description="Clears generated files">
+		<delete file="../target/${ant.project.name}.jar"/>
+		<delete includeemptydirs="true" dir="bin"/>
+	</target>
+	
+</project>

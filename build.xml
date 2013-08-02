@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="ru.aplix.mera" default="package">
+	
+	<filelist id="subprojects" dir=".">
+		<file name="pjcomm"/>
+		<file name="driver"/>
+	</filelist>
+	
+	<target name="package" description="Packages a JAR files">
+		<mkdir dir="target"/>
+		<copy todir="target">
+			<fileset dir="lib" includes="*.jar"/>
+		</copy>
+		<subant target="package" inheritall="false" inheritrefs="false">
+			<filelist refid="subprojects"/>
+		</subant>
+	</target>
+
+	<target name="clean" description="Clears generated files">
+		<delete includeemptydirs="true" dir="target"/>
+		<subant target="clean" inheritall="false" inheritrefs="false">
+			<filelist refid="subprojects"/>
+		</subant>
+	</target>
+	
+</project>
