@@ -3,6 +3,7 @@ package ru.aplix.mera.test.message;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import ru.aplix.mera.message.MeraConsumer;
 
 
 public class TestConsumer implements MeraConsumer<TestHandle, String> {

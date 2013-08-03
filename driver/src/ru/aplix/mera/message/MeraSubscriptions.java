@@ -1,4 +1,4 @@
-package ru.aplix.mera.test.message;
+package ru.aplix.mera.message;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;

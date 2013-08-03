@@ -1,4 +1,4 @@
-package ru.aplix.mera.test.message;
+package ru.aplix.mera.message;
 
 
 /**
