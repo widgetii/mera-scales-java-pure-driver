@@ -24,7 +24,9 @@
 		<mkdir dir="../target"/>
 		<jar destfile="../target/${ant.project.name}.jar">
 			<manifest>
-				<attribute name="Main-Class" value="ru.aplix.mera.CommTest"/>
+				<attribute
+					name="Main-Class"
+					value="ru.aplix.mera.test.CommTest"/>
 			</manifest>
 			<manifest>
 				<attribute

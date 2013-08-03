@@ -1,4 +1,4 @@
-package ru.aplix.mera;
+package ru.aplix.mera.test;
 
 import static purejavacomm.CommPortIdentifier.PORT_SERIAL;
 import static purejavacomm.CommPortIdentifier.addPortName;
@@ -47,28 +47,15 @@ public class CommTest {
 			final SerialReader reader = new SerialReader(port);
 
 			port.addEventListener(reader);
-	        port.notifyOnDataAvailable(true);
+			port.notifyOnDataAvailable(true);
 
-	        final Thread writer = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						requestDeviceId(port);
-						if (!reader.waitForResponse(1000)) {
-							requestDeviceId(port);
-							if (!reader.waitForResponse(1000)) {
-								System.err.println("(!) NO RESPONSE");
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+			requestDeviceId(port);
+			if (!reader.waitForResponse(1000)) {
+				requestDeviceId(port);
+				if (!reader.waitForResponse(1000)) {
+					System.err.println("(!) NO RESPONSE");
 				}
-
-			});
-
-	        writer.start();
-	        writer.join();
+			}
 		} finally {
 			port.close();
 		}
@@ -193,21 +180,23 @@ public class CommTest {
 		private boolean waitForResponse(long timeout) {
 
 			final long time = System.currentTimeMillis() + timeout;
+			long left = timeout;
 
-			synchronized (this) {
-				for (;;) {
+			for (;;) {
+				synchronized (this) {
 					if (this.hasResponse) {
 						return true;
 					}
-					if (System.currentTimeMillis() >= time) {
+					if (left <= 0) {
 						return false;
 					}
 					try {
-						wait(timeout);
+						wait(left);
 					} catch (InterruptedException e) {
 						return false;
 					}
 				}
+				left = time - System.currentTimeMillis();
 			}
 		}
 
