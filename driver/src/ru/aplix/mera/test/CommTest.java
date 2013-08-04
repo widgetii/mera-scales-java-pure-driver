@@ -109,7 +109,7 @@ public class CommTest {
 
 		for (byte b : response) {
 
-			final String str = Integer.toHexString(b);
+			final String str = Integer.toHexString(b & 0xff);
 
 			if (str.length() == 1) {
 				System.out.print("#0");
