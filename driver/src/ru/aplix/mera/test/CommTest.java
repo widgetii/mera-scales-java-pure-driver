@@ -44,18 +44,21 @@ public class CommTest {
 
 		try {
 
-			final SerialReader reader = new SerialReader(port);
+			final ResponseListener listener = new ResponseListener();
 
-			port.addEventListener(reader);
+			port.addEventListener(listener);
 			port.notifyOnDataAvailable(true);
 
 			requestDeviceId(port);
-			if (!reader.waitForResponse(1000)) {
+			if (!listener.waitForResponse(1000)) {
 				requestDeviceId(port);
-				if (!reader.waitForResponse(1000)) {
+				if (!listener.waitForResponse(1000)) {
 					System.err.println("(!) NO RESPONSE");
+					return;
 				}
 			}
+
+			printResponse(readResponse(port));
 		} finally {
 			port.close();
 		}
@@ -70,6 +73,35 @@ public class CommTest {
 		System.err.println("(!) Request device ID");
 		out.write(READ_DEVICE_ID_CMD);
 		out.flush();
+	}
+
+	@SuppressWarnings("resource")
+	private byte[] readResponse(SerialPort port) throws IOException {
+		System.err.println("(!) Read response");
+
+		final InputStream in = port.getInputStream();
+		final byte[] response = new byte[9];
+		int responseLen = 0;
+
+		for (;;) {
+
+			final int read = in.read();
+
+			if (read < 0) {
+				break;
+			}
+			response[responseLen++] = (byte) read;
+			if (read == END_OF_BLOCK) {
+				System.err.println("(!) End of block");
+				break;
+			}
+		}
+
+		if (responseLen == response.length) {
+			return response;
+		}
+
+		return Arrays.copyOf(response, responseLen);
 	}
 
 	private static void printResponse(final byte[] response) {
@@ -120,56 +152,15 @@ public class CommTest {
 		port.setSerialPortParams(COMMAND_PARAMS);
 	}
 
-	private static final class SerialReader implements SerialPortEventListener {
+	private static final class ResponseListener
+			implements SerialPortEventListener {
 
-		private final SerialPort port;
 		private volatile boolean hasResponse;
-
-		SerialReader(SerialPort port) {
-			this.port = port;
-		}
 
 		@Override
 		public void serialEvent(SerialPortEvent ev) {
-			try {
-				printResponse(readResponse(this.port));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		@SuppressWarnings("resource")
-		private byte[] readResponse(SerialPort port) throws IOException {
-			System.err.println("(!) Read response");
-
-			final InputStream in = port.getInputStream();
-			final byte[] response = new byte[9];
-			int responseLen = 0;
-			boolean hasResponse = false;
-
-			for (;;) {
-
-				final int read = in.read();
-
-				if (!hasResponse) {
-					responseReceived();
-					hasResponse = true;
-				}
-				if (read < 0) {
-					break;
-				}
-				response[responseLen++] = (byte) read;
-				if (read == END_OF_BLOCK) {
-					System.err.println("(!) End of block");
-					break;
-				}
-			}
-
-			if (responseLen == response.length) {
-				return response;
-			}
-
-			return Arrays.copyOf(response, responseLen);
+			System.err.println("(!) Response received");
+			responseReceived();
 		}
 
 		private synchronized void responseReceived() {
