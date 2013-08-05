@@ -1,9 +1,7 @@
 package ru.aplix.mera.scales;
 
-import java.util.Arrays;
-
 import ru.aplix.mera.message.MeraConsumer;
-import ru.aplix.mera.message.MeraHandle;
+import ru.aplix.mera.message.MeraServiceHandle;
 
 
 /**
@@ -14,17 +12,16 @@ import ru.aplix.mera.message.MeraHandle;
  * through it are also revoked.</p>
  */
 public final class ScalesStatusHandle
-		extends MeraHandle<ScalesStatusHandle, ScalesStatusMessage> {
+		extends MeraServiceHandle<ScalesStatusHandle, ScalesStatusMessage> {
 
 	private final ScalesBackend backend;
-	private MeraHandle<?, ?>[] handles;
 
 	ScalesStatusHandle(
 			ScalesBackend backend,
 			MeraConsumer<
 					? super ScalesStatusHandle,
 					? super ScalesStatusMessage> consumer) {
-		super(backend.statusSubscriptions(), consumer);
+		super(backend, consumer);
 		this.backend = backend;
 	}
 
@@ -39,31 +36,8 @@ public final class ScalesStatusHandle
 			MeraConsumer<
 					? super WeightHandle,
 					? super WeightMessage> consumer) {
-		return addHandle(
+		return addSubscription(
 				this.backend.weightSubscriptions().subscribe(consumer));
-	}
-
-	final void unsubscribeAll() {
-		if (this.handles == null) {
-			return;
-		}
-		for (MeraHandle<?, ?> handle : this.handles) {
-			handle.unsubscribe();
-		}
-		this.handles = null;
-	}
-
-	private <H extends MeraHandle<H, ?>> H addHandle(H handle) {
-		if (this.handles == null) {
-			this.handles = new MeraHandle<?, ?>[] {handle};
-		} else {
-
-			final int len = this.handles.length;
-
-			this.handles = Arrays.copyOf(this.handles, len + 1);
-			this.handles[len] = handle;
-		}
-		return handle;
 	}
 
 }

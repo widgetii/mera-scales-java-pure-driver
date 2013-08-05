@@ -4,7 +4,7 @@ import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraHandle;
 
 
-public class TestHandle extends MeraHandle <TestHandle, String> {
+public class TestHandle extends MeraHandle<TestHandle, String> {
 
 	TestHandle(
 			TestSubscriptions subscriptions,

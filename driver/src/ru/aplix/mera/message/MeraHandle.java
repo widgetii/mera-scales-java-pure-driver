@@ -24,6 +24,7 @@ public abstract class MeraHandle<H extends MeraHandle<H, M>, M> {
 	private AtomicBoolean unsubscribed = new AtomicBoolean();
 	private H prev;
 	private H next;
+	private MeraServiceHandle<?, ?> serviceHandle;
 
 	public MeraHandle(
 			MeraSubscriptions<H, M> subscriptions,
@@ -67,6 +68,9 @@ public abstract class MeraHandle<H extends MeraHandle<H, M>, M> {
 
 	final void subscribed() {
 		getConsumer().consumerSubscribed(self());
+		if (this.serviceHandle != null) {
+			this.serviceHandle.removeHandle(this);
+		}
 	}
 
 	final void unsubscribed() {
@@ -108,6 +112,10 @@ public abstract class MeraHandle<H extends MeraHandle<H, M>, M> {
 
 			n.prev = prev;
 		}
+	}
+
+	final void setServiceHandle(MeraServiceHandle<?, ?> serviceHandle) {
+		this.serviceHandle = serviceHandle;
 	}
 
 	@SuppressWarnings("unchecked")

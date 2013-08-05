@@ -28,6 +28,7 @@ public class SubscriptionsTest {
 				(Object) handle.getConsumer(),
 				sameInstance((Object) consumer));
 		assertThat(consumer.getHandle(), sameInstance(handle));
+		assertThat(this.subscriptions.isEmpty(), is(false));
 
 		this.subscriptions.sendMessage(TEST_MESSAGE_1);
 		this.subscriptions.sendMessage(TEST_MESSAGE_2);
@@ -47,6 +48,7 @@ public class SubscriptionsTest {
 
 		assertThat(consumer.isUnsubscribed(), is(true));
 		assertThat(handle.isSubscribed(), is(false));
+		assertThat(this.subscriptions.isEmpty(), is(true));
 
 		this.subscriptions.sendMessage(TEST_MESSAGE_2);
 
