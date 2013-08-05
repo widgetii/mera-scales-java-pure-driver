@@ -27,20 +27,20 @@ public final class ScalesBackendHandle extends MeraServiceHandle<
 	}
 
 	/**
-	 * Requests the status update.
+	 * Requests the updated status from the device.
 	 */
 	public final void refreshStatus() {
 		this.backend.refreshStatus();
 	}
 
 	/**
-	 * Subscribe on weight updates.
+	 * Subscribes the given consumer on weight updates.
 	 *
 	 * @param consumer weight updates consumer.
 	 *
 	 * @return weight updates handle.
 	 */
-	public final WeightUpdateHandle requestWeigth(
+	public final WeightUpdateHandle requestWeight(
 			MeraConsumer<
 					? super WeightUpdateHandle,
 					? super WeightUpdate> consumer) {
