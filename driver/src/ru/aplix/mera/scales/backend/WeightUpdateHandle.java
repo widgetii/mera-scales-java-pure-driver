@@ -5,16 +5,16 @@ import ru.aplix.mera.message.MeraHandle;
 
 
 /**
- * Measured weight message handle.
+ * Measured weight updates handle.
  */
-public final class MeasureHandle
-		extends MeraHandle<MeasureHandle, MeasureMessage> {
+public final class WeightUpdateHandle
+		extends MeraHandle<WeightUpdateHandle, WeightUpdate> {
 
-	MeasureHandle(
+	WeightUpdateHandle(
 			ScalesBackend backend,
 			MeraConsumer<
-					? super MeasureHandle,
-					? super MeasureMessage> consumer) {
+					? super WeightUpdateHandle,
+					? super WeightUpdate> consumer) {
 		super(backend.weightSubscriptions(), consumer);
 	}
 

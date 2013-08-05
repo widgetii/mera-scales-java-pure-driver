@@ -13,7 +13,7 @@ import ru.aplix.mera.message.MeraServiceHandle;
  */
 public final class ScalesBackendHandle extends MeraServiceHandle<
 		ScalesBackendHandle,
-		ScalesConnectionMessage> {
+		ScalesStatusUpdate> {
 
 	private final ScalesBackend backend;
 
@@ -21,9 +21,16 @@ public final class ScalesBackendHandle extends MeraServiceHandle<
 			ScalesBackend backend,
 			MeraConsumer<
 					? super ScalesBackendHandle,
-					? super ScalesConnectionMessage> consumer) {
+					? super ScalesStatusUpdate> consumer) {
 		super(backend, consumer);
 		this.backend = backend;
+	}
+
+	/**
+	 * Requests the status update.
+	 */
+	public final void refreshStatus() {
+		this.backend.refreshStatus();
 	}
 
 	/**
@@ -33,10 +40,10 @@ public final class ScalesBackendHandle extends MeraServiceHandle<
 	 *
 	 * @return weight updates handle.
 	 */
-	public final MeasureHandle requestWeigth(
+	public final WeightUpdateHandle requestWeigth(
 			MeraConsumer<
-					? super MeasureHandle,
-					? super MeasureMessage> consumer) {
+					? super WeightUpdateHandle,
+					? super WeightUpdate> consumer) {
 		return addSubscription(
 				this.backend.weightSubscriptions().subscribe(consumer));
 	}

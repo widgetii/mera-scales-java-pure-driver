@@ -2,12 +2,12 @@ package ru.aplix.mera.scales.backend;
 
 
 /**
- * Measured weight message.
+ * Measured weight updated message.
  */
-public interface MeasureMessage {
+public interface WeightUpdate {
 
 	/**
-	 * Returns measured weight.
+	 * Measured weight.
 	 *
 	 * @return weight in metric grams.
 	 */

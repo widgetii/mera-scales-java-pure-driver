@@ -2,15 +2,16 @@ package ru.aplix.mera.scales.backend;
 
 import ru.aplix.mera.scales.ScalesDevice;
 import ru.aplix.mera.scales.ScalesStatus;
+import ru.aplix.mera.scales.ScalesStatusMessage;
 
 
 /**
- * Scales connection event message.
+ * Scales status update message.
  *
- * <p>It informs about connection establishing, errors, and device
- * type, and software revision.
+ * <p>In contrast to {@link ScalesStatusMessage}, this message is generated
+ * on each status request.</p>
  */
-public interface ScalesConnectionMessage {
+public interface ScalesStatusUpdate {
 
 	/**
 	 * Scales status.

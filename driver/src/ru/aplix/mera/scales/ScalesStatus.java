@@ -14,6 +14,10 @@ public enum ScalesStatus {
 	/**
 	 * Error connecting to scales.
 	 */
-	ERROR
+	ERROR;
+
+	public final boolean isError() {
+		return this == ERROR;
+	}
 
 }
