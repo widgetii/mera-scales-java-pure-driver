@@ -2,10 +2,8 @@ package ru.aplix.mera.scales;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
+import ru.aplix.mera.message.MeraSubscriptions;
 import ru.aplix.mera.scales.backend.ScalesBackend;
-import ru.aplix.mera.scales.backend.ScalesBackendHandle;
-import ru.aplix.mera.scales.backend.ScalesStatusUpdate;
-import ru.aplix.mera.util.PeriodicalAction;
 
 
 /**
@@ -22,12 +20,13 @@ import ru.aplix.mera.util.PeriodicalAction;
 public class ScalesPort
 		extends MeraService<ScalesPortHandle, ScalesStatusMessage> {
 
-	private static final long MIN_RECONNECTION_TIMEOUT = 1000L;
-	private static final long MAX_RECONNECTION_TIMEOUT = 5000L;
-
 	private final ScalesBackend backend;
 	private final ScalesStatusListener statusListener =
 			new ScalesStatusListener(this);
+	private final LoadSubscriptions loadSubscriptions =
+			new LoadSubscriptions(this);
+	private final WeightSubscriptions weightSubscriptions =
+			new WeightSubscriptions(this);
 
 	ScalesPort(ScalesBackend backend) {
 		this.backend = backend;
@@ -55,88 +54,53 @@ public class ScalesPort
 		return this.backend;
 	}
 
-	private static final class ScalesStatusListener
-			implements MeraConsumer<ScalesBackendHandle, ScalesStatusUpdate> {
+	final MeraSubscriptions<ScalesPortHandle, ScalesStatusMessage>
+	portSubscriptions() {
+		return serviceSubscriptions();
+	}
+
+	final MeraSubscriptions<LoadHandle, LoadMessage> loadSubscriptions() {
+		return this.loadSubscriptions;
+	}
+
+	final MeraSubscriptions<WeightHandle, WeightMessage> weightSubscriptions() {
+		return this.weightSubscriptions;
+	}
+
+	private static final class LoadSubscriptions
+			extends MeraSubscriptions<LoadHandle, LoadMessage> {
 
 		private final ScalesPort port;
-		private final PortConnector connector = new PortConnector(this);
-		private ScalesBackendHandle handle;
-		private ScalesStatusMessage lastStatus;
 
-		ScalesStatusListener(ScalesPort port) {
+		LoadSubscriptions(ScalesPort port) {
 			this.port = port;
 		}
 
-		final ScalesBackendHandle handle() {
-			return this.handle;
-		}
-
 		@Override
-		public void consumerSubscribed(ScalesBackendHandle handle) {
-			this.handle = handle;
-		}
-
-		@Override
-		public void messageReceived(ScalesStatusUpdate update) {
-
-			final boolean updated;
-
-			synchronized (this) {
-				updated = updateStatus(update);
-				if (update.getScalesStatus().isError()) {
-					this.connector.performEvery(MIN_RECONNECTION_TIMEOUT);
-				}
-			}
-
-			if (updated) {
-				this.port.serviceSubscriptions()
-				.sendMessage(new ScalesStatusMessage(update));
-			}
-		}
-
-		@Override
-		public void consumerUnubscribed(ScalesBackendHandle handle) {
-			this.connector.stop();
-		}
-
-		private boolean updateStatus(ScalesStatusUpdate message) {
-			if (this.lastStatus == null) {
-				this.lastStatus = new ScalesStatusMessage(message);
-				return true;
-			}
-
-			final ScalesStatusMessage newStatus =
-					this.lastStatus.update(message);
-
-			if (newStatus == this.lastStatus) {
-				return false;
-			}
-
-			this.lastStatus = newStatus;
-
-			return true;
+		protected LoadHandle createHandle(
+				MeraConsumer<
+						? super LoadHandle,
+						? super LoadMessage> consumer) {
+			return new LoadHandle(this.port, consumer);
 		}
 
 	}
 
-	private static final class PortConnector extends PeriodicalAction {
+	private static final class WeightSubscriptions
+			extends MeraSubscriptions<WeightHandle, WeightMessage> {
 
-		private final ScalesStatusListener statusListener;
+		private final ScalesPort port;
 
-		PortConnector(ScalesStatusListener statusListener) {
-			super(statusListener);
-			this.statusListener = statusListener;
+		WeightSubscriptions(ScalesPort port) {
+			this.port = port;
 		}
 
 		@Override
-		protected boolean condition() {
-			return this.statusListener.lastStatus.getScalesStatus().isError();
-		}
-
-		@Override
-		protected void action() {
-			this.statusListener.handle().refreshStatus();
-			performEvery(Math.min(MAX_RECONNECTION_TIMEOUT, getTimeout() * 2));
+		protected WeightHandle createHandle(
+				MeraConsumer<
+						? super WeightHandle,
+						? super WeightMessage> consumer) {
+			return new WeightHandle(this.port, consumer);
 		}
 
 	}
