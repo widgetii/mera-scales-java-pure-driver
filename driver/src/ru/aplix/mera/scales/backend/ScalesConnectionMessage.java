@@ -1,4 +1,7 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.backend;
+
+import ru.aplix.mera.scales.ScalesDevice;
+import ru.aplix.mera.scales.ScalesStatus;
 
 
 /**
@@ -7,7 +10,7 @@ package ru.aplix.mera.scales;
  * <p>It informs about connection establishing, errors, and device
  * type, and software revision.
  */
-public interface ScalesStatusMessage {
+public interface ScalesConnectionMessage {
 
 	/**
 	 * Scales status.

@@ -1,4 +1,4 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.backend;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraHandle;
@@ -7,14 +7,14 @@ import ru.aplix.mera.message.MeraHandle;
 /**
  * Measured weight message handle.
  */
-public final class WeightHandle
-		extends MeraHandle<WeightHandle, WeightMessage> {
+public final class MeasureHandle
+		extends MeraHandle<MeasureHandle, MeasureMessage> {
 
-	WeightHandle(
+	MeasureHandle(
 			ScalesBackend backend,
 			MeraConsumer<
-					? super WeightHandle,
-					? super WeightMessage> consumer) {
+					? super MeasureHandle,
+					? super MeasureMessage> consumer) {
 		super(backend.weightSubscriptions(), consumer);
 	}
 

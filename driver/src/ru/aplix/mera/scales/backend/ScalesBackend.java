@@ -1,4 +1,4 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.backend;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
@@ -9,7 +9,7 @@ import ru.aplix.mera.message.MeraSubscriptions;
  * Abstract weigher device back-end.
  */
 public abstract class ScalesBackend
-		extends MeraService<ScalesStatusHandle, ScalesStatusMessage> {
+		extends MeraService<ScalesBackendHandle, ScalesConnectionMessage> {
 
 	private final WeightSubscription weightSubscription =
 			new WeightSubscription(this);
@@ -20,8 +20,8 @@ public abstract class ScalesBackend
 	 * @return all weight updates subscriptions.
 	 */
 	protected final MeraSubscriptions<
-			WeightHandle,
-			WeightMessage> weightSubscriptions() {
+			MeasureHandle,
+			MeasureMessage> weightSubscriptions() {
 		return this.weightSubscription;
 	}
 
@@ -36,7 +36,7 @@ public abstract class ScalesBackend
 	protected abstract void stopWeighing();
 
 	private static final class WeightSubscription
-			extends MeraSubscriptions<WeightHandle, WeightMessage> {
+			extends MeraSubscriptions<MeasureHandle, MeasureMessage> {
 
 		private final ScalesBackend backend;
 
@@ -45,21 +45,21 @@ public abstract class ScalesBackend
 		}
 
 		@Override
-		protected WeightHandle createHandle(
+		protected MeasureHandle createHandle(
 				MeraConsumer<
-						? super WeightHandle,
-						? super WeightMessage> consumer) {
-			return new WeightHandle(this.backend, consumer);
+						? super MeasureHandle,
+						? super MeasureMessage> consumer) {
+			return new MeasureHandle(this.backend, consumer);
 		}
 
 		@Override
-		protected void firstSubscribed(WeightHandle handle) {
+		protected void firstSubscribed(MeasureHandle handle) {
 			super.firstSubscribed(handle);
 			this.backend.startWeighing();
 		}
 
 		@Override
-		protected void lastUnsubscribed(WeightHandle handle) {
+		protected void lastUnsubscribed(MeasureHandle handle) {
 			super.lastUnsubscribed(handle);
 			this.backend.stopWeighing();
 		}

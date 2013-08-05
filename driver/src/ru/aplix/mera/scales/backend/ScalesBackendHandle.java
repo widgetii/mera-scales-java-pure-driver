@@ -1,4 +1,4 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.backend;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraServiceHandle;
@@ -11,16 +11,17 @@ import ru.aplix.mera.message.MeraServiceHandle;
  * updates. When this subscription revoked, all subscriptions registered
  * through it are also revoked.</p>
  */
-public final class ScalesStatusHandle
-		extends MeraServiceHandle<ScalesStatusHandle, ScalesStatusMessage> {
+public final class ScalesBackendHandle extends MeraServiceHandle<
+		ScalesBackendHandle,
+		ScalesConnectionMessage> {
 
 	private final ScalesBackend backend;
 
-	ScalesStatusHandle(
+	ScalesBackendHandle(
 			ScalesBackend backend,
 			MeraConsumer<
-					? super ScalesStatusHandle,
-					? super ScalesStatusMessage> consumer) {
+					? super ScalesBackendHandle,
+					? super ScalesConnectionMessage> consumer) {
 		super(backend, consumer);
 		this.backend = backend;
 	}
@@ -32,10 +33,10 @@ public final class ScalesStatusHandle
 	 *
 	 * @return weight updates handle.
 	 */
-	public final WeightHandle requestWeigth(
+	public final MeasureHandle requestWeigth(
 			MeraConsumer<
-					? super WeightHandle,
-					? super WeightMessage> consumer) {
+					? super MeasureHandle,
+					? super MeasureMessage> consumer) {
 		return addSubscription(
 				this.backend.weightSubscriptions().subscribe(consumer));
 	}
