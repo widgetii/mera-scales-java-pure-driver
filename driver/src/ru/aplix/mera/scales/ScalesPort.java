@@ -5,6 +5,7 @@ import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.scales.backend.ScalesBackend;
 import ru.aplix.mera.scales.backend.ScalesBackendHandle;
 import ru.aplix.mera.scales.backend.ScalesStatusUpdate;
+import ru.aplix.mera.util.PeriodicalAction;
 
 
 /**
@@ -21,7 +22,8 @@ import ru.aplix.mera.scales.backend.ScalesStatusUpdate;
 public class ScalesPort
 		extends MeraService<ScalesPortHandle, ScalesStatusMessage> {
 
-	private static final long RECONNECTION_TIMEOUT = 5000L;
+	private static final long MIN_RECONNECTION_TIMEOUT = 1000L;
+	private static final long MAX_RECONNECTION_TIMEOUT = 5000L;
 
 	private final ScalesBackend backend;
 	private final ScalesStatusListener statusListener =
@@ -54,13 +56,12 @@ public class ScalesPort
 	}
 
 	private static final class ScalesStatusListener
-			implements MeraConsumer<ScalesBackendHandle, ScalesStatusUpdate>,
-			Runnable {
+			implements MeraConsumer<ScalesBackendHandle, ScalesStatusUpdate> {
 
 		private final ScalesPort port;
+		private final PortConnector connector = new PortConnector(this);
 		private ScalesBackendHandle handle;
 		private ScalesStatusMessage lastStatus;
-		private Thread updateThread;
 
 		ScalesStatusListener(ScalesPort port) {
 			this.port = port;
@@ -83,7 +84,7 @@ public class ScalesPort
 			synchronized (this) {
 				updated = updateStatus(update);
 				if (update.getScalesStatus().isError()) {
-					requestStatusUpdates();
+					this.connector.performEvery(MIN_RECONNECTION_TIMEOUT);
 				}
 			}
 
@@ -95,13 +96,7 @@ public class ScalesPort
 
 		@Override
 		public void consumerUnubscribed(ScalesBackendHandle handle) {
-		}
-
-		@Override
-		public void run() {
-			while (!waitForConnection(RECONNECTION_TIMEOUT)) {
-				handle().refreshStatus();
-			}
+			this.connector.stop();
 		}
 
 		private boolean updateStatus(ScalesStatusUpdate message) {
@@ -122,43 +117,28 @@ public class ScalesPort
 			return true;
 		}
 
-		private void requestStatusUpdates() {
-			if (this.updateThread == null) {
-				this.updateThread = new Thread(this);
-				this.updateThread.start();
-			}
+	}
+
+	private static final class PortConnector extends PeriodicalAction {
+
+		private final ScalesStatusListener statusListener;
+
+		PortConnector(ScalesStatusListener statusListener) {
+			super(statusListener);
+			this.statusListener = statusListener;
 		}
 
-		private synchronized boolean waitForConnection(long timeout) {
-
-			final long time = System.currentTimeMillis() - timeout;
-			long left = timeout;
-
-			for (;;) {
-
-				boolean threadTerminated = true;
-
-				try {
-					if (!this.lastStatus.getScalesStatus().isError()) {
-						return true;
-					}
-					if (left <= 0) {
-						threadTerminated = false;
-						return false;
-					}
-					try {
-						wait(left);
-					} catch (InterruptedException e) {
-						return true;
-					}
-				} finally {
-					if (threadTerminated) {
-						this.updateThread = null;
-					}
-				}
-				left = time - System.currentTimeMillis();
-			}
+		@Override
+		protected boolean condition() {
+			return this.statusListener.lastStatus.getScalesStatus().isError();
 		}
+
+		@Override
+		protected void action() {
+			this.statusListener.handle().refreshStatus();
+			performEvery(Math.min(MAX_RECONNECTION_TIMEOUT, getTimeout() * 2));
+		}
+
 	}
 
 }
