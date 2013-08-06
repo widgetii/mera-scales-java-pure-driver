@@ -69,8 +69,8 @@ public abstract class MeraService<H extends MeraServiceHandle<H, M>, M> {
 
 		@Override
 		protected void firstSubscribed(H handle) {
-			super.firstSubscribed(handle);
 			startService();
+			super.firstSubscribed(handle);
 		}
 
 		@Override

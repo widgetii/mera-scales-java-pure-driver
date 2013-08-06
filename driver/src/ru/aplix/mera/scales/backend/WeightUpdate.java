@@ -19,4 +19,11 @@ public interface WeightUpdate {
 	 */
 	int getWeight();
 
+	/**
+	 * The time of weighing.
+	 *
+	 * @return UNIX time of weight measurement, in milliseconds.
+	 */
+	long getWeighingTime();
+
 }

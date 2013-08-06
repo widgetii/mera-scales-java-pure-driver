@@ -1,5 +1,7 @@
 package ru.aplix.mera.scales;
 
+import ru.aplix.mera.scales.backend.WeightUpdate;
+
 
 /**
  * Weight message.
@@ -12,14 +14,22 @@ package ru.aplix.mera.scales;
  */
 public class WeightMessage {
 
-	private final int weight;
+	private final WeightUpdate update;
 
-	WeightMessage(int weight) {
-		this.weight = weight;
+	WeightMessage(WeightUpdate update) {
+		this.update = update;
 	}
 
-	public int getWeight() {
-		return this.weight;
+	public final int getWeight() {
+		return this.update.getWeight();
+	}
+
+	@Override
+	public String toString() {
+		if (this.update == null) {
+			return super.toString();
+		}
+		return "WeightMessage[" + getWeight() + "g]";
 	}
 
 }

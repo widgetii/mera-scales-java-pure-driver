@@ -1,5 +1,7 @@
 package ru.aplix.mera.scales;
 
+import ru.aplix.mera.scales.backend.WeightUpdate;
+
 
 /**
  * Weight load/unload event message.
@@ -10,11 +12,11 @@ package ru.aplix.mera.scales;
  */
 public class LoadMessage {
 
-	private final int weight;
+	private final WeightUpdate update;
 	private final boolean loaded;
 
-	LoadMessage(int weight, boolean loaded) {
-		this.weight = weight;
+	LoadMessage(WeightUpdate update, boolean loaded) {
+		this.update = update;
 		this.loaded = loaded;
 	}
 
@@ -28,7 +30,7 @@ public class LoadMessage {
 	 * @return weight in metric grams.
 	 */
 	public final int getWeight() {
-		return this.weight;
+		return this.update.getWeight();
 	}
 
 	/**
@@ -43,8 +45,11 @@ public class LoadMessage {
 
 	@Override
 	public String toString() {
-		return "LoadMessage[" + this.weight
-				+ (this.loaded ? "gr loaded]" : "gr unloaded]");
+		if (this.update == null) {
+			return super.toString();
+		}
+		return "LoadMessage[" + getWeight()
+				+ (this.loaded ? "g loaded]" : "g unloaded]");
 	}
 
 }

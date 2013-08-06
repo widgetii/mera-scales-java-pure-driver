@@ -4,6 +4,7 @@ import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
 import ru.aplix.mera.scales.backend.ScalesBackend;
+import ru.aplix.mera.scales.backend.ScalesBackendHandle;
 
 
 /**
@@ -27,6 +28,8 @@ public class ScalesPort
 			new LoadSubscriptions(this);
 	private final WeightSubscriptions weightSubscriptions =
 			new WeightSubscriptions(this);
+	private final WeightUpdatesListener weightListener =
+			new WeightUpdatesListener(this);
 
 	ScalesPort(ScalesBackend backend) {
 		this.backend = backend;
@@ -47,11 +50,15 @@ public class ScalesPort
 
 	@Override
 	protected void stopService() {
-		this.statusListener.handle().unsubscribe();
+		statusHandle().unsubscribe();
 	}
 
 	final ScalesBackend backend() {
 		return this.backend;
+	}
+
+	final ScalesBackendHandle statusHandle() {
+		return this.statusListener.handle();
 	}
 
 	final MeraSubscriptions<ScalesPortHandle, ScalesStatusMessage>
@@ -84,6 +91,18 @@ public class ScalesPort
 			return new LoadHandle(this.port, consumer);
 		}
 
+		@Override
+		protected void firstSubscribed(LoadHandle handle) {
+			this.port.weightListener.start();
+			super.firstSubscribed(handle);
+		}
+
+		@Override
+		protected void lastUnsubscribed(LoadHandle handle) {
+			super.lastUnsubscribed(handle);
+			this.port.weightListener.stop();
+		}
+
 	}
 
 	private static final class WeightSubscriptions
@@ -101,6 +120,18 @@ public class ScalesPort
 						? super WeightHandle,
 						? super WeightMessage> consumer) {
 			return new WeightHandle(this.port, consumer);
+		}
+
+		@Override
+		protected void firstSubscribed(WeightHandle handle) {
+			this.port.weightListener.start();
+			super.firstSubscribed(handle);
+		}
+
+		@Override
+		protected void lastUnsubscribed(WeightHandle handle) {
+			super.lastUnsubscribed(handle);
+			this.port.weightListener.stop();
 		}
 
 	}
