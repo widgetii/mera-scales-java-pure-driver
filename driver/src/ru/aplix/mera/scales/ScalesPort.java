@@ -50,14 +50,14 @@ public class ScalesPort
 
 	@Override
 	protected void stopService() {
-		statusHandle().unsubscribe();
+		backendHandle().unsubscribe();
 	}
 
 	final ScalesBackend backend() {
 		return this.backend;
 	}
 
-	final ScalesBackendHandle statusHandle() {
+	final ScalesBackendHandle backendHandle() {
 		return this.statusListener.handle();
 	}
 

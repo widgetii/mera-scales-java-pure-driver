@@ -34,7 +34,7 @@ final class WeightUpdatesListener
 
 	public final synchronized void start() {
 		if (this.started++ == 0) {
-			this.port.statusHandle().requestWeight(this);
+			this.port.backendHandle().requestWeight(this);
 		}
 	}
 

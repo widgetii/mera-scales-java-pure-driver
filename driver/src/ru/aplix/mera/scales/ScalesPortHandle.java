@@ -26,6 +26,21 @@ public final class ScalesPortHandle
 	}
 
 	/**
+	 * Subscribes the given consumer on error messages.
+	 *
+	 * @param consumer errors consumer.
+	 *
+	 * @return errors subscription handle.
+	 */
+	public final ScalesErrorHandle listenForErrors(
+			MeraConsumer<
+					? super ScalesErrorHandle,
+					? super ScalesErrorMessage> consumer) {
+		return addSubscription(
+				this.port.backendHandle().listenForErrors(consumer));
+	}
+
+	/**
 	 * Subscribes the given consumer on weight load/unload events.
 	 *
 	 * @param consumer load/unload consumer to subscribe.

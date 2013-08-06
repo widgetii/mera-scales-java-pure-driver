@@ -3,6 +3,8 @@ package ru.aplix.mera.scales.backend;
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
+import ru.aplix.mera.scales.ScalesErrorHandle;
+import ru.aplix.mera.scales.ScalesErrorMessage;
 
 
 /**
@@ -11,8 +13,21 @@ import ru.aplix.mera.message.MeraSubscriptions;
 public abstract class ScalesBackend
 		extends MeraService<ScalesBackendHandle, ScalesStatusUpdate> {
 
+	private final ErrorSubscriptions errorSubscriptions =
+			new ErrorSubscriptions();
 	private final WeightSubscription weightSubscription =
 			new WeightSubscription(this);
+
+	/**
+	 * Error subscriptions.
+	 *
+	 * @return all error subscriptions.
+	 */
+	protected final MeraSubscriptions<
+			ScalesErrorHandle,
+			ScalesErrorMessage> errorSubscriptions() {
+		return this.errorSubscriptions;
+	}
 
 	/**
 	 * Weight updates subscriptions.
@@ -67,6 +82,19 @@ public abstract class ScalesBackend
 		protected void lastUnsubscribed(WeightUpdateHandle handle) {
 			super.lastUnsubscribed(handle);
 			this.backend.stopWeighing();
+		}
+
+	}
+
+	private static final class ErrorSubscriptions
+			extends MeraSubscriptions<ScalesErrorHandle, ScalesErrorMessage> {
+
+		@Override
+		protected ScalesErrorHandle createHandle(
+				MeraConsumer<
+						? super ScalesErrorHandle,
+						? super ScalesErrorMessage> consumer) {
+			return new ScalesErrorHandle(this, consumer);
 		}
 
 	}
