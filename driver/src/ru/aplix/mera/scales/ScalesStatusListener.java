@@ -1,9 +1,12 @@
 package ru.aplix.mera.scales;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.scales.backend.ScalesBackendHandle;
 import ru.aplix.mera.scales.backend.ScalesStatusUpdate;
-import ru.aplix.mera.util.PeriodicalAction;
 
 
 final class ScalesStatusListener
@@ -13,16 +16,13 @@ final class ScalesStatusListener
 	private static final long MAX_RECONNECTION_TIMEOUT = 5000L;
 
 	private final ScalesPort port;
-	private final PortConnector connector = new PortConnector(this);
 	private ScalesBackendHandle handle;
-	ScalesStatusMessage lastStatus;
+	private ScalesStatusMessage lastStatus;
+	private final Timer timer = new Timer();
+	private PortReconnector reconnector;
 
 	ScalesStatusListener(ScalesPort port) {
 		this.port = port;
-	}
-
-	final ScalesBackendHandle handle() {
-		return this.handle;
 	}
 
 	@Override
@@ -37,8 +37,12 @@ final class ScalesStatusListener
 
 		synchronized (this) {
 			updated = updateStatus(update);
-			if (update.getScalesStatus().isError()) {
-				this.connector.performEvery(MIN_RECONNECTION_TIMEOUT);
+			if (updated && update.getScalesStatus().isError()) {
+				scheduleReconnection(
+						new Date(
+								System.currentTimeMillis()
+								+ MIN_RECONNECTION_TIMEOUT),
+						MIN_RECONNECTION_TIMEOUT);
 			}
 		}
 
@@ -49,8 +53,15 @@ final class ScalesStatusListener
 	}
 
 	@Override
-	public void consumerUnubscribed(ScalesBackendHandle handle) {
-		this.connector.stop();
+	public synchronized void consumerUnubscribed(ScalesBackendHandle handle) {
+		if (this.reconnector != null) {
+			this.reconnector.cancel();
+			this.reconnector = null;
+		}
+	}
+
+	final ScalesBackendHandle handle() {
+		return this.handle;
 	}
 
 	private boolean updateStatus(ScalesStatusUpdate message) {
@@ -71,24 +82,47 @@ final class ScalesStatusListener
 		return true;
 	}
 
-	private static final class PortConnector extends PeriodicalAction {
+	private synchronized void scheduleReconnection(
+			Date firstTime,
+			long period) {
+		if (this.reconnector != null) {
+			this.reconnector.cancel();
+		}
+		this.reconnector = new PortReconnector(this, period);
+		this.timer.scheduleAtFixedRate(
+				this.reconnector,
+				firstTime,
+				period);
+	}
+
+	private static final class PortReconnector extends TimerTask {
 
 		private final ScalesStatusListener statusListener;
+		private final long period;
 
-		PortConnector(ScalesStatusListener statusListener) {
-			super(statusListener);
+		PortReconnector(ScalesStatusListener statusListener, long period) {
 			this.statusListener = statusListener;
+			this.period = period;
 		}
 
 		@Override
-		protected boolean condition() {
-			return this.statusListener.lastStatus.getScalesStatus().isError();
-		}
-
-		@Override
-		protected void action() {
+		public void run() {
 			this.statusListener.handle().refreshStatus();
-			performEvery(Math.min(MAX_RECONNECTION_TIMEOUT, getTimeout() * 2));
+
+			final long newPeriod = Math.min(
+					this.period * 2,
+					MAX_RECONNECTION_TIMEOUT);
+
+			if (newPeriod == this.period) {
+				return;
+			}
+
+			final long thisExecutionTime =
+					scheduledExecutionTime() - this.period;
+
+			this.statusListener.scheduleReconnection(
+					new Date(thisExecutionTime + newPeriod),
+					newPeriod);
 		}
 
 	}
