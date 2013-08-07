@@ -112,8 +112,8 @@ public final class Byte9Validity {
 	/**
 	 * Whether Byte9 packed has wrong control sum.
 	 *
-	 * @return <code>true</code> if packed has wrong
-	 * {@link Byte9Packet#getCRC() CRC}.
+	 * @return <code>true</code> if packet has wrong
+	 * {@link Byte9Packet#crcByte() CRC}.
 	 */
 	public final boolean hasCRCError() {
 		return this.crcError;

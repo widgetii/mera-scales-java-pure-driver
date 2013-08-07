@@ -9,6 +9,8 @@ import static ru.aplix.mera.scales.byte9.Byte9Validity.byte9LengthValidity;
 
 import java.util.Objects;
 
+import ru.aplix.mera.util.CRC8;
+
 
 /**
  * Byte9 protocol packed.
@@ -132,29 +134,15 @@ public class Byte9Packet {
 	}
 
 	/**
-	 * Control sum.
-	 *
-	 * @return CRC stored in byte <code>#7</code>.
-	 */
-	public final int getCRC() {
-		return this.rawData[7] & 0xff;
-	}
-
-	/**
 	 * Calculates packet CRC.
 	 *
 	 * @return actual packet data CRC.
 	 */
-	public int calculateCRC() {
+	public final byte calculateCRC() {
 
 		final int len = Math.min(7, this.rawData.length);
-		int crc = 0;
 
-		for (int i = 0; i < len; ++i) {
-			crc = (crc + (this.rawData[i] & 0xff)) & 0xff;
-		}
-
-		return crc;
+		return CRC8.calcCRC8(this.rawData, 0, len);
 	}
 
 	/**
@@ -174,6 +162,15 @@ public class Byte9Packet {
 	 */
 	public final byte commandByte() {
 		return this.rawData[3];
+	}
+
+	/**
+	 * Control sum byte.
+	 *
+	 * @return CRC stored in byte <code>#7</code>.
+	 */
+	public final int crcByte() {
+		return this.rawData[7] & 0xff;
 	}
 
 	/**
@@ -199,7 +196,7 @@ public class Byte9Packet {
 			return byte9LengthValidity(this.rawData.length);
 		}
 
-		final boolean crcError = calculateCRC() != getCRC();
+		final boolean crcError = calculateCRC() != crcByte();
 		final boolean wrongTerminator =
 				this.rawData[8] != BYTE9_TERMINATOR_BYTE;
 
