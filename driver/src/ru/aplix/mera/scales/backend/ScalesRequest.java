@@ -19,6 +19,17 @@ public class ScalesRequest {
 	}
 
 	/**
+	 * Reports unpredictable scales status update, such as disconnection.
+	 *
+	 * @param statusUpdate scales status update.
+	 */
+	public void statusUpdate(ScalesStatusUpdate statusUpdate) {
+		if (!this.backend.updateStatus(statusUpdate)) {
+			this.backend.refreshStatus();
+		}
+	}
+
+	/**
 	 * Reports an error.
 	 *
 	 * @param error error to report.

@@ -1,5 +1,6 @@
 package ru.aplix.mera.scales.byte9;
 
+import static ru.aplix.mera.scales.byte9.Byte9Command.BYTE9_DEVICE_ID_REQUEST;
 import ru.aplix.mera.scales.ScalesDevice;
 import ru.aplix.mera.scales.ScalesStatus;
 import ru.aplix.mera.scales.backend.ScalesStatusUpdate;
@@ -22,6 +23,11 @@ public class Byte9StatusUpdate implements ScalesStatusUpdate {
 	private final String error;
 
 	private Byte9StatusUpdate(String deviceId, Byte9Packet packet) {
+		if (packet.getCommand() != BYTE9_DEVICE_ID_REQUEST) {
+			throw new IllegalArgumentException(
+					"Unexpected command: " + packet.getCommand()
+					+ ", while " + BYTE9_DEVICE_ID_REQUEST + " expected");
+		}
 		this.packet = packet;
 		this.device = new Byte9Device(deviceId, packet);
 		this.error = null;

@@ -31,6 +31,11 @@ public class Byte9ErrorMessage implements ScalesErrorMessage {
 	}
 
 	@Override
+	public Throwable getCause() {
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		if (this.packet == null) {
 			return super.toString();

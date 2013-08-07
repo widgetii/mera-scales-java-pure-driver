@@ -72,6 +72,7 @@ public class ScalesBackend
 	@Override
 	protected void startService() {
 		this.executor = newSingleThreadScheduledExecutor();
+		refreshStatus();
 	}
 
 	@Override

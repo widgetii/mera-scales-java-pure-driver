@@ -3,6 +3,8 @@ package ru.aplix.mera.scales.backend;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import ru.aplix.mera.scales.ThrowableErrorMessage;
+
 
 class WeighingTask implements Runnable {
 
@@ -16,8 +18,21 @@ class WeighingTask implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 
+		final ScalesRequest request = new ScalesRequest(this.backend);
+		final WeightUpdate weightUpdate;
+
+		try {
+			weightUpdate = this.backend.driver().requestWeight(request);
+		} catch (Throwable e) {
+			this.backend.errorSubscriptions()
+			.sendMessage(new ThrowableErrorMessage(e));
+			return;
+		}
+
+		if (weightUpdate != null) {
+			this.backend.weightSubscriptions().sendMessage(weightUpdate);
+		}
 	}
 
 	public synchronized void start() {
