@@ -33,7 +33,8 @@
 					name="Class-Path" 
 					value="ru.aplix.mera.pjcomm.jar"/>
 			</manifest>
-			<fileset dir="bin"/>
+			<fileset dir="bin" includes="*.class"/>
+			<fileset dir="src" excludes="*.java"/>
 		</jar>
 	</target>
 

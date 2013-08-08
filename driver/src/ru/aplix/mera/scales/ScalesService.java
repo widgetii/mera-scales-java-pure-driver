@@ -196,7 +196,7 @@ public class ScalesService {
 
 			final ScalesProtocol protocol = factory.getScalesProtocol();
 
-			for (String deviceId : factory.sclalesDeviceIds()) {
+			for (String deviceId : factory.scalesDeviceIds()) {
 				portIds.add(new ScalesPortId(this, deviceId, protocol));
 			}
 		} catch (Exception e) {

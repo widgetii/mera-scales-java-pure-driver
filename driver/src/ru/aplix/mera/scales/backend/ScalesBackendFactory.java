@@ -27,6 +27,6 @@ public interface ScalesBackendFactory {
 	 * @return array of scales device {@link ScalesPortId#getDeviceId()
 	 * identifiers}.
 	 */
-	String[] sclalesDeviceIds();
+	String[] scalesDeviceIds();
 
 }
