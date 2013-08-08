@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="ru.aplix.mera.driver" default="package">
+<project name="ru.aplix.mera.tester" default="package">
 	
-	<property name="compile.classpath" value="../lib/jna.jar:../pjcomm/bin/"/>
+	<property name="compile.classpath" value="../driver/bin/"/>
 
 	<target name="compile" description="Compiles everything">
 		<mkdir dir="bin"/>
@@ -26,12 +26,12 @@
 			<manifest>
 				<attribute
 					name="Main-Class"
-					value="ru.aplix.mera.test.CommTest"/>
+					value="ru.aplix.mera.tester.TesterApp"/>
 			</manifest>
 			<manifest>
 				<attribute
 					name="Class-Path" 
-					value="ru.aplix.mera.pjcomm.jar"/>
+					value="ru.aplix.mera.driver.jar"/>
 			</manifest>
 			<fileset dir="bin"/>
 		</jar>

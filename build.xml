@@ -5,6 +5,7 @@
 	<filelist id="subprojects" dir=".">
 		<file name="pjcomm"/>
 		<file name="driver"/>
+		<file name="tester"/>
 	</filelist>
 	
 	<target name="package" description="Packages a JAR files">
