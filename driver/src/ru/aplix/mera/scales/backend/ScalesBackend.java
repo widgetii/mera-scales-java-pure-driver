@@ -24,16 +24,17 @@ public class ScalesBackend
 	private final WeightSubscription weightSubscription =
 			new WeightSubscription(this);
 	private ScheduledExecutorService executor;
-	private final WeighingTask weighing = new WeighingTask(this);
+	private final Weighing weighing;
 
 	public ScalesBackend(ScalesDriver driver) {
 		this.driver = driver;
 
-		final ScalesDriverContext context = new ScalesDriverContext();
+		final ScalesDriverContext context = new ScalesDriverContext(this);
 
 		context.initDriver(driver);
 
 		this.config = context.getConfig();
+		this.weighing = context.createWeighting();
 	}
 
 	public final ScalesBackendConfig config() {

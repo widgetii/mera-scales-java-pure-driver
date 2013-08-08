@@ -25,7 +25,7 @@ public class ScalesRequest {
 	 */
 	public void statusUpdate(ScalesStatusUpdate statusUpdate) {
 		if (!this.backend.updateStatus(statusUpdate)) {
-			this.backend.refreshStatus();
+			backend().refreshStatus();
 		}
 	}
 
@@ -35,7 +35,11 @@ public class ScalesRequest {
 	 * @param error error to report.
 	 */
 	public void error(ScalesErrorMessage error) {
-		this.backend.errorSubscriptions().sendMessage(error);
+		backend().errorSubscriptions().sendMessage(error);
+	}
+
+	protected final ScalesBackend backend() {
+		return this.backend;
 	}
 
 }

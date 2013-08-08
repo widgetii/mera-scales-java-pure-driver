@@ -98,6 +98,9 @@ public final class ScalesBackendConfig implements Cloneable {
 	 * ScalesRequest) requests the weight} from the driver. This is the delay
 	 * between such requests.</p>
 	 *
+	 * <p>Note that this setting won't be used if a weight updater
+	 * {@link ScalesDriverContext#updateWeightWith(WeightUpdater) provided}.</p>
+	 *
 	 * @return period in milliseconds.
 	 */
 	public final long getWeighingPeriod() {

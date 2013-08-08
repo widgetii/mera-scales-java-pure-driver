@@ -6,13 +6,13 @@ import java.util.concurrent.TimeUnit;
 import ru.aplix.mera.scales.ThrowableErrorMessage;
 
 
-class WeighingTask implements Runnable {
+final class PeriodicalWeighing implements Weighing, Runnable {
 
 	private final ScalesBackend backend;
 	private ScheduledFuture<?> future;
 	private boolean enabled;
 
-	WeighingTask(ScalesBackend backend) {
+	PeriodicalWeighing(ScalesBackend backend) {
 		this.backend = backend;
 	}
 
@@ -35,23 +35,27 @@ class WeighingTask implements Runnable {
 		}
 	}
 
+	@Override
 	public synchronized void start() {
 		this.enabled = true;
 		schedule();
 	}
 
+	@Override
 	public synchronized void suspend() {
 		if (this.enabled) {
 			cancel();
 		}
 	}
 
+	@Override
 	public synchronized void resume() {
 		if (this.enabled) {
 			schedule();
 		}
 	}
 
+	@Override
 	public synchronized void stop() {
 		this.enabled = false;
 		cancel();
