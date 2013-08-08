@@ -28,7 +28,12 @@ public class ScalesBackend
 
 	public ScalesBackend(ScalesDriver driver) {
 		this.driver = driver;
-		this.config = driver.backendConfig();
+
+		final ScalesDriverContext context = new ScalesDriverContext();
+
+		context.initDriver(driver);
+
+		this.config = context.getConfig();
 	}
 
 	public final ScalesBackendConfig config() {

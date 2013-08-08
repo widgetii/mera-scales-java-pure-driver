@@ -1,6 +1,5 @@
 package ru.aplix.mera.scales.byte9;
 
-import static ru.aplix.mera.scales.backend.ScalesBackendConfig.DEFAULT_SCALES_BACKEND_CONFIG;
 import static ru.aplix.mera.scales.byte9.Byte9Packet.byte9DeviceIdRequest;
 import static ru.aplix.mera.scales.byte9.Byte9StatusUpdate.byte9Status;
 import ru.aplix.mera.scales.backend.*;
@@ -15,8 +14,7 @@ public class Byte9Driver implements ScalesDriver {
 	}
 
 	@Override
-	public ScalesBackendConfig backendConfig() {
-		return DEFAULT_SCALES_BACKEND_CONFIG;
+	public void initScalesDriver(ScalesDriverContext context) {
 	}
 
 	@Override

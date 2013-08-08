@@ -7,11 +7,13 @@ package ru.aplix.mera.scales.backend;
 public interface ScalesDriver {
 
 	/**
-	 * Scales backend config suitable to this driver.
+	 * Initializes this driver.
 	 *
-	 * @return backend config.
+	 * <p>This method is called prior to any attempt to use it.</p>
+	 *
+	 * @param context driver context the driver can use to configure backend.
 	 */
-	ScalesBackendConfig backendConfig();
+	void initScalesDriver(ScalesDriverContext context);
 
 	/**
 	 * Obtains the scales status.
