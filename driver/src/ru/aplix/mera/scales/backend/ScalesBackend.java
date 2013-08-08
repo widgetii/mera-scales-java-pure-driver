@@ -34,7 +34,7 @@ public class ScalesBackend
 		context.initDriver(driver);
 
 		this.config = context.getConfig();
-		this.weighing = context.createWeighting();
+		this.weighing = context.getWeighting();
 	}
 
 	public final ScalesBackendConfig config() {
@@ -92,7 +92,7 @@ public class ScalesBackend
 	}
 
 	final void refreshStatus() {
-		this.weighing.suspend();
+		this.weighing.suspendWeighing();
 		new StatusRequestTask(this).schedule(
 				0,
 				config().getMinReconnectDelay());
@@ -103,7 +103,7 @@ public class ScalesBackend
 		final boolean error = status.getScalesStatus().isError();
 
 		if (!error) {
-			this.weighing.resume();
+			this.weighing.resumeWeighing();
 		}
 
 		serviceSubscriptions().sendMessage(status);
@@ -131,13 +131,13 @@ public class ScalesBackend
 		@Override
 		protected void firstSubscribed(WeightUpdateHandle handle) {
 			super.firstSubscribed(handle);
-			this.backend.weighing.start();
+			this.backend.weighing.startWeighing();
 		}
 
 		@Override
 		protected void lastUnsubscribed(WeightUpdateHandle handle) {
 			super.lastUnsubscribed(handle);
-			this.backend.weighing.stop();
+			this.backend.weighing.stopWeighing();
 		}
 
 	}

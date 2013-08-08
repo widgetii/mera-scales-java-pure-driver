@@ -57,7 +57,7 @@ final class Byte9Session {
 		if (!listener.waitForResponse(1000L)) {
 			sendPacket(request);
 			if (!listener.waitForResponse(1000L)) {
-				this.scalesRequest.statusUpdate(
+				this.scalesRequest.updateStatus(
 						byte9ErrorStatus("No response"));
 				return null;
 			}

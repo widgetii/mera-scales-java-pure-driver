@@ -60,7 +60,7 @@ final class StatusRequestTask implements Runnable {
 		}
 
 		@Override
-		public void statusUpdate(ScalesStatusUpdate statusUpdate) {
+		public void updateStatus(ScalesStatusUpdate statusUpdate) {
 			this.statusUpdate = statusUpdate;
 		}
 

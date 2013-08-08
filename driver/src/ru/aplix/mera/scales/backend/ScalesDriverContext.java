@@ -1,6 +1,5 @@
 package ru.aplix.mera.scales.backend;
 
-import static ru.aplix.mera.scales.backend.NoWeighing.NO_WEIGHING;
 import static ru.aplix.mera.scales.backend.ScalesBackendConfig.DEFAULT_SCALES_BACKEND_CONFIG;
 
 
@@ -15,7 +14,7 @@ public class ScalesDriverContext {
 
 	private final ScalesBackend backend;
 	private ScalesBackendConfig config = DEFAULT_SCALES_BACKEND_CONFIG;
-	private WeightUpdater weightUpdater;
+	private Weighing weighing;
 	private volatile boolean initialized;
 
 	ScalesDriverContext(ScalesBackend backend) {
@@ -50,15 +49,15 @@ public class ScalesDriverContext {
 	 * Informs the backend that the weight updates shall be reported
 	 * automatically.
 	 *
-	 * @param weightUpdater the weight updater responsible for weight updates
+	 * @param weighing the weighting process responsible for weight updates
 	 * reporting, or <code>null</code> to cause the backend to request the
 	 * weight periodically.
 	 *
-	 * @see WeightUpdater
+	 * @see Weighing
 	 */
-	public final void updateWeightWith(WeightUpdater weightUpdater) {
+	public final void updateWeightWith(Weighing weighing) {
 		ensureNotInitialized();
-		this.weightUpdater = weightUpdater;
+		this.weighing = weighing;
 	}
 
 	final void initDriver(ScalesDriver driver) {
@@ -67,17 +66,16 @@ public class ScalesDriverContext {
 		initWeightUpdater();
 	}
 
-	final Weighing createWeighting() {
-		if (this.weightUpdater != null) {
-			return NO_WEIGHING;
+	final Weighing getWeighting() {
+		if (this.weighing != null) {
+			return this.weighing;
 		}
 		return new PeriodicalWeighing(this.backend);
 	}
 
 	private void initWeightUpdater() {
-		if (this.weightUpdater != null) {
-			this.weightUpdater.initWeightUpdater(
-					new WeightRequest(this.backend));
+		if (this.weighing != null) {
+			this.weighing.initWeighting(new WeightRequest(this.backend));
 		}
 	}
 

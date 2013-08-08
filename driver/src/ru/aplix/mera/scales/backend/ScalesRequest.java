@@ -23,7 +23,7 @@ public class ScalesRequest {
 	 *
 	 * @param statusUpdate scales status update.
 	 */
-	public void statusUpdate(ScalesStatusUpdate statusUpdate) {
+	public void updateStatus(ScalesStatusUpdate statusUpdate) {
 		if (!this.backend.updateStatus(statusUpdate)) {
 			backend().refreshStatus();
 		}

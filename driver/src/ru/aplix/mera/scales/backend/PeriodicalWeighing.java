@@ -11,9 +11,15 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 	private final ScalesBackend backend;
 	private ScheduledFuture<?> future;
 	private boolean enabled;
+	private WeightRequest weightRequest;
 
 	PeriodicalWeighing(ScalesBackend backend) {
 		this.backend = backend;
+	}
+
+	@Override
+	public void initWeighting(WeightRequest weightRequest) {
+		this.weightRequest = weightRequest;
 	}
 
 	@Override
@@ -29,34 +35,33 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 			.sendMessage(new ThrowableErrorMessage(e));
 			return;
 		}
-
 		if (weightUpdate != null) {
-			this.backend.weightSubscriptions().sendMessage(weightUpdate);
+			this.weightRequest.updateWeight(weightUpdate);
 		}
 	}
 
 	@Override
-	public synchronized void start() {
+	public synchronized void startWeighing() {
 		this.enabled = true;
 		schedule();
 	}
 
 	@Override
-	public synchronized void suspend() {
+	public synchronized void suspendWeighing() {
 		if (this.enabled) {
 			cancel();
 		}
 	}
 
 	@Override
-	public synchronized void resume() {
+	public synchronized void resumeWeighing() {
 		if (this.enabled) {
 			schedule();
 		}
 	}
 
 	@Override
-	public synchronized void stop() {
+	public synchronized void stopWeighing() {
 		this.enabled = false;
 		cancel();
 	}

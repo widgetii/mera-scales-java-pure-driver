@@ -30,9 +30,9 @@ public interface ScalesDriver {
 	/**
 	 * Measures the weight.
 	 *
-	 * <p>Note that this method won't be called if a weight updater
-	 * {@link ScalesDriverContext#updateWeightWith(WeightUpdater) provided}.
-	 * </p>
+	 * <p>Note that this method won't be called if weight updates are
+	 * {@link ScalesDriverContext#updateWeightWith(Weighing) reported
+	 *  automatically}.</p>
 	 *
 	 * @param request scales request.
 	 *
