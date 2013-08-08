@@ -1,5 +1,6 @@
 package ru.aplix.mera.scales;
 
+import static java.util.Objects.requireNonNull;
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
@@ -32,6 +33,7 @@ public class ScalesPort
 			new WeightUpdatesListener(this);
 
 	ScalesPort(ScalesBackend backend) {
+		requireNonNull(backend, "Scales backend not specified");
 		this.backend = backend;
 	}
 
