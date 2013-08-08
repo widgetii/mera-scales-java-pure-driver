@@ -16,6 +16,11 @@ public class Byte9WeightUpdate implements WeightUpdate {
 	}
 
 	@Override
+	public boolean isSteadyWeight() {
+		return false;
+	}
+
+	@Override
 	public int getWeight() {
 		return this.packet.getSignedValue();
 	}

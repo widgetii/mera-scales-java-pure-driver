@@ -91,6 +91,10 @@ final class WeightUpdatesListener
 	}
 
 	private void checkSteadyness(WeightUpdate update) {
+		if (update.isSteadyWeight()) {
+			reportWeight(update);
+			return;
+		}
 
 		final int len = this.lastUpdates.length();
 		final int firstIdx = len - STEADY_MEASURES;
@@ -131,6 +135,10 @@ final class WeightUpdatesListener
 			// Forcibly consider the weight steady.
 		}
 
+		reportWeight(update);
+	}
+
+	private void reportWeight(WeightUpdate update) {
 		this.steady = true;
 		this.port.weightSubscriptions()
 		.sendMessage(new WeightMessage(update));
