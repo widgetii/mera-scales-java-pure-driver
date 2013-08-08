@@ -21,19 +21,20 @@ final class StatusRequestTask implements Runnable {
 	@Override
 	public void run() {
 
-		final ScalesRequest request = new ScalesRequest(this.backend);
+		final StatusRequest request = new StatusRequest(this.backend);
 		final long now = System.currentTimeMillis();
-		final ScalesStatusUpdate status;
+		ScalesStatusUpdate statusUpdate = null;
 
 		try {
-			status = this.backend.driver().requestStatus(request);
+			statusUpdate = this.backend.driver().requestStatus(request);
 		} catch (Throwable e) {
 			this.backend.errorSubscriptions()
 			.sendMessage(new ThrowableErrorMessage(e));
-			return;
 		}
 
-		if (status != null && this.backend.updateStatus(status)) {
+		final ScalesStatusUpdate lastUpdate = request.lastUpdate(statusUpdate);
+
+		if (lastUpdate != null && this.backend.updateStatus(lastUpdate)) {
 			return;
 		}
 
@@ -48,6 +49,28 @@ final class StatusRequestTask implements Runnable {
 
 		new StatusRequestTask(this.backend)
 		.schedule(now + this.period, newPeriod);
+	}
+
+	private static final class StatusRequest extends ScalesRequest {
+
+		private ScalesStatusUpdate statusUpdate;
+
+		StatusRequest(ScalesBackend backend) {
+			super(backend);
+		}
+
+		@Override
+		public void statusUpdate(ScalesStatusUpdate statusUpdate) {
+			this.statusUpdate = statusUpdate;
+		}
+
+		final ScalesStatusUpdate lastUpdate(ScalesStatusUpdate statusUpdate) {
+			if (statusUpdate != null) {
+				return statusUpdate;
+			}
+			return this.statusUpdate;
+		}
+
 	}
 
 }
