@@ -1,6 +1,5 @@
 package ru.aplix.mera.scales;
 
-import static java.lang.Thread.currentThread;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.BufferedReader;
@@ -28,7 +27,7 @@ import ru.aplix.mera.scales.backend.ScalesBackendFactory;
 public class ScalesDiscovery {
 
 	private static final String SERVICE_FILE_NAME =
-			"META-INF/services/" + ScalesService.class.getName();
+			"META-INF/services/" + ScalesBackendFactory.class.getName();
 
 	private final ScalesService service;
 	private final ArrayList<ScalesPortId> portIds = new ArrayList<>();
@@ -56,9 +55,9 @@ public class ScalesDiscovery {
 	 *
 	 * <p>A {@link #discoverScales()} method is called to find them.</>
 	 *
-	 * @return available scales ports.
+	 * @return all available scales port identifiers.
 	 */
-	public final List<? extends ScalesPortId> getScalesPorts() {
+	public final List<? extends ScalesPortId> getScalesPortIds() {
 		discoverScales();
 		return unmodifiableList(this.portIds);
 	}
@@ -116,12 +115,12 @@ public class ScalesDiscovery {
 	 */
 	protected ClassLoader getClassLoader() {
 
-		final ClassLoader contextClassLoader =
+		/*final ClassLoader contextClassLoader =
 				currentThread().getContextClassLoader();
 
 		if (contextClassLoader != null) {
 			return contextClassLoader;
-		}
+		}*/
 
 		return getClass().getClassLoader();
 	}

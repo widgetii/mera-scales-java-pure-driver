@@ -21,7 +21,7 @@ public class ScalesService {
 		return new ScalesService();
 	}
 
-	private List<? extends ScalesPortId> sclalesPortIds;
+	private List<? extends ScalesPortId> scalesPortIds;
 
 	/**
 	 * Constructs scales service instance.
@@ -40,10 +40,10 @@ public class ScalesService {
 	 * @return a list of scales port identifiers.
 	 */
 	public synchronized List<? extends ScalesPortId> getScalesPortIds() {
-		if (this.sclalesPortIds == null) {
-			return this.sclalesPortIds;
+		if (this.scalesPortIds != null) {
+			return this.scalesPortIds;
 		}
-		return this.sclalesPortIds = createScalesDiscovery().getScalesPorts();
+		return this.scalesPortIds = createScalesDiscovery().getScalesPortIds();
 	}
 
 	/**
