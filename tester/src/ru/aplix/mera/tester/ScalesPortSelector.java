@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.JComboBox;
+import javax.swing.event.EventListenerList;
 
 import ru.aplix.mera.scales.ScalesPortId;
 
 
-public class ScalesPortSelector
-		extends JComboBox<ScalesPortSelector.PortOption> {
+public class ScalesPortSelector extends JComboBox<PortOption> {
 
 	private static final long serialVersionUID = -3527716597948842233L;
 
@@ -37,121 +37,47 @@ public class ScalesPortSelector
 				portSelected();
 			}
 		});
-		portSelected();
 	}
 
 	private PortOption selected;
+	private EventListenerList portListeners = new EventListenerList();
+
+	public final PortOption getSelected() {
+		return this.selected;
+	}
+
+	public final void addPortListener(PortListener portListener) {
+		this.portListeners.add(PortListener.class, portListener);
+	}
+
+	public final void removePortListener(PortListener portListener) {
+		this.portListeners.remove(PortListener.class, portListener);
+	}
+
+	final void init() {
+		portSelected();
+	}
 
 	private void portSelected() {
 
-		final PortOption option = (PortOption) getSelectedItem();
+		final PortOption selected = (PortOption) getSelectedItem();
 
 		if (this.selected != null) {
-			if (this.selected == option) {
+			if (this.selected == selected) {
 				return;
+			}
+			for (PortListener listener
+					: this.portListeners.getListeners(PortListener.class)) {
+				listener.portDeselected(this.selected);
 			}
 			this.selected.deselect();
 		}
-		this.selected = option;
-		option.select();
-	}
-
-	public static final class PortOption implements Comparable<PortOption> {
-
-		private final TesterApp app;
-		private final ScalesPortId portId;
-
-		PortOption(TesterApp app) {
-			this.app = app;
-			this.portId = null;
+		this.selected = selected;
+		selected.select();
+		for (PortListener listener
+				: this.portListeners.getListeners(PortListener.class)) {
+			listener.portSelected(selected);
 		}
-
-		PortOption(TesterApp app, ScalesPortId portId) {
-			this.app = app;
-			this.portId = portId;
-		}
-
-		public final ScalesPortId getPortId() {
-			return this.portId;
-		}
-
-		public void select() {
-			if (getPortId() == null) {
-				return;
-			}
-			this.app.log("Устройство: " + this);
-			// TODO Auto-generated method stub
-		}
-
-		public void deselect() {
-			if (getPortId() == null) {
-				return;
-			}
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public int compareTo(PortOption o) {
-
-			final ScalesPortId pid1 = getPortId();
-			final ScalesPortId pid2 = o.getPortId();
-
-			if (pid1 == null) {
-				return pid2 == null ? 0 : -1;
-			}
-			if (pid2 == null) {
-				return 1;
-			}
-
-			final String proto1 = pid1.getProtocol().getProtocolName();
-			final String proto2 = pid2.getProtocol().getProtocolName();
-			final int protoCmp = proto1.compareTo(proto2);
-
-			if (protoCmp != 0) {
-				return protoCmp;
-			}
-
-			return pid1.getDeviceId().compareTo(pid2.getDeviceId());
-		}
-
-		@Override
-		public int hashCode() {
-			return this.portId == null ? 0 : this.portId.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-
-			final PortOption other = (PortOption) obj;
-
-			if (this.portId == null) {
-				if (other.portId != null) {
-					return false;
-				}
-			} else if (!this.portId.equals(other.portId)) {
-				return false;
-			}
-
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			if (this.portId == null) {
-				return "Устройство";
-			}
-			return this.portId.toString();
-		}
-
 	}
 
 }

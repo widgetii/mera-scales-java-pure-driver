@@ -1,6 +1,7 @@
 package ru.aplix.mera.tester;
 
 import static javax.swing.SwingUtilities.invokeLater;
+import static javax.swing.SwingUtilities.isEventDispatchThread;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import static ru.aplix.mera.scales.ScalesService.newScalesService;
 
@@ -23,10 +24,14 @@ public class TesterApp implements Runnable {
 	}
 
 	private final ScalesService scalesService = newScalesService();
-	private TesterLog log;
+	private TesterContent content;
 
 	public final ScalesService getScalesService() {
 		return this.scalesService;
+	}
+
+	public final TesterContent getContent() {
+		return this.content;
 	}
 
 	@Override
@@ -43,16 +48,28 @@ public class TesterApp implements Runnable {
 			}
 		});
 
-		final TesterContent content = new TesterContent(this);
+		this.content = new TesterContent(this);
 
-		this.log = content.getLog();
-		frame.setContentPane(content);
+		frame.setContentPane(this.content);
 		frame.pack();
 		frame.setVisible(true);
 	}
 
-	public void log(String message) {
-		this.log.log(message);
+	public void perform(Runnable action) {
+		if (isEventDispatchThread()) {
+			action.run();
+		} else {
+			invokeLater(action);
+		}
+	}
+
+	public void log(final String message) {
+		perform(new Runnable() {
+			@Override
+			public void run() {
+				getContent().getLog().log(message);
+			}
+		});
 	}
 
 	private void init() {
