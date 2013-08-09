@@ -59,8 +59,8 @@ public class ScalesService {
 	/**
 	 * Creates a new scales port instance with the given identifier.
 	 *
-	 * <p>This is an implementation of {@link ScalesPortId#openPort()} method.
-	 * </p>
+	 * <p>This is call for the first time a {@link ScalesPortId#getPort()}
+	 * method is called.</p>
 	 *
 	 * @param portId an identifier of scales port to open.
 	 *

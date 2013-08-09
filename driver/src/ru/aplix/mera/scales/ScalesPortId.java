@@ -11,6 +11,7 @@ public final class ScalesPortId {
 	private final ScalesService scalesService;
 	private final String deviceId;
 	private final ScalesProtocol protocol;
+	private ScalesPort port;
 
 	ScalesPortId(
 			ScalesService scalesService,
@@ -42,12 +43,18 @@ public final class ScalesPortId {
 	}
 
 	/**
-	 * Opens the scales port.
+	 * Returns the scales port identified by this identifier. Opens the port if
+	 * not opened yet.
 	 *
-	 * @return new scales port instance identified by this device.
+	 * <p>This method is thread-safe.</p>
+	 *
+	 * @return a scales port instance.
 	 */
-	public final ScalesPort openPort() {
-		return this.scalesService.openPort(this);
+	public synchronized final ScalesPort getPort() {
+		if (this.port != null) {
+			return this.port;
+		}
+		return this.port = this.scalesService.openPort(this);
 	}
 
 	@Override
