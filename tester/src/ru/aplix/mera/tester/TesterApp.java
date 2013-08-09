@@ -1,18 +1,32 @@
 package ru.aplix.mera.tester;
 
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
+import static ru.aplix.mera.scales.ScalesService.newScalesService;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
+
+import ru.aplix.mera.scales.ScalesService;
 
 
 public class TesterApp implements Runnable {
 
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new TesterApp());
+
+		final TesterApp app = new TesterApp();
+
+		app.init();
+		invokeLater(app);
+	}
+
+	private final ScalesService scalesService = newScalesService();
+	private TesterLog log;
+
+	public final ScalesService getScalesService() {
+		return this.scalesService;
 	}
 
 	@Override
@@ -29,7 +43,20 @@ public class TesterApp implements Runnable {
 			}
 		});
 
+		final TesterContent content = new TesterContent(this);
+
+		this.log = content.getLog();
+		frame.setContentPane(content);
+		frame.pack();
 		frame.setVisible(true);
+	}
+
+	public void log(String message) {
+		this.log.log(message);
+	}
+
+	private void init() {
+		this.scalesService.getScalesPortIds();// Prefetch them.
 	}
 
 	private void release() {
