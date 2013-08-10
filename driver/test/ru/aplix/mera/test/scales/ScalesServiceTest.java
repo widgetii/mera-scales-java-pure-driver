@@ -7,6 +7,7 @@ import static ru.aplix.mera.scales.byte9.Byte9ScalesProtocol.BYTE9_SCALES_PROTOC
 
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,6 +17,10 @@ import ru.aplix.mera.scales.*;
 public class ScalesServiceTest {
 
 	private TestScalesService service;
+	private ScalesPort port;
+	private ScalesStatusConsumer statusConsumer;
+	private TestScalesDriver driver;
+	private ScalesPortHandle statusHandle;
 
 	@Before
 	public void createService() {
@@ -30,30 +35,97 @@ public class ScalesServiceTest {
 
 	@Test
 	public void connect() throws InterruptedException {
-		this.service.addTestDevice("test");
+		openPort();
 
-		final TestScalesDriver driver = this.service.getDriver("test");
-		final ScalesPortId portId =
-				this.service.getScalesPortIds().get(0);
-		final ScalesPort port = portId.getPort();
-		final ScalesStatusConsumer statusConsumer = new ScalesStatusConsumer();
-		final ScalesPortHandle statusHandle = port.subscribe(statusConsumer);
+		assertThat(this.statusConsumer.getMessages().isEmpty(), is(true));
 
-		assertThat(statusConsumer.getMessages().isEmpty(), is(true));
+		final TestScalesStatusUpdate connectedStatus =
+				this.driver.connectedStatus();
 
-		final TestScalesStatusUpdate connectedStatus = driver.connectedStatus();
-		driver.setStatus(connectedStatus);
+		this.driver.sendStatus(connectedStatus);
 
 		final ScalesStatusMessage status =
-				statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
+				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
 
 		assertThat(status, notNullValue());
 		assertThat(status.getScalesStatus(), is(ScalesStatus.CONNECTED));
 		assertThat(
 				status.getScalesDevice(),
 				is(connectedStatus.getScalesDevice()));
+	}
 
-		statusHandle.unsubscribe();
+	@Test
+	public void noConnection() throws InterruptedException {
+		openPort();
+
+		final TestScalesStatusUpdate errorStatus =
+				this.driver.errorStatus("Connection failed");
+
+		this.driver.sendStatus(errorStatus);
+
+		final ScalesStatusMessage status =
+				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
+
+		assertThat(status, notNullValue());
+		assertThat(status.getScalesStatus(), is(ScalesStatus.ERROR));
+		assertThat(status.getScalesError(), is(errorStatus.getScalesError()));
+
+		this.statusHandle.unsubscribe();
+		this.driver.stop();
+	}
+
+	@Test
+	public void reconnection() throws InterruptedException {
+		openPort();
+
+		final TestScalesStatusUpdate errorStatus =
+				this.driver.errorStatus("Connection failed");
+
+		this.driver.sendStatus(errorStatus);
+		this.driver.sendStatus(errorStatus);
+
+		final TestScalesStatusUpdate connectedStatus =
+				this.driver.connectedStatus();
+
+		this.driver.sendStatus(connectedStatus);
+
+		final ScalesStatusMessage status1 =
+				this.statusConsumer.getMessages().take();
+
+		assertThat(status1, notNullValue());
+		assertThat(status1.getScalesStatus(), is(ScalesStatus.ERROR));
+		assertThat(status1.getScalesError(), is(errorStatus.getScalesError()));
+
+		final ScalesStatusMessage status2 =
+				this.statusConsumer.getMessages().take();
+
+		assertThat(status2, notNullValue());
+		assertThat(status2.getScalesStatus(), is(ScalesStatus.CONNECTED));
+		assertThat(
+				status2.getScalesDevice(),
+				is(connectedStatus.getScalesDevice()));
+	}
+
+	@After
+	public void stop() {
+		if (this.driver != null) {
+			this.driver.stop();
+		}
+		if (this.statusHandle != null) {
+			this.statusHandle.unsubscribe();
+		}
+	}
+
+	private void openPort() {
+		this.service.addTestDevice("test");
+		this.driver = this.service.getDriver("test");
+
+		final ScalesPortId portId =
+				this.service.getScalesPortIds().get(0);
+
+		this.port = portId.getPort();
+		this.statusConsumer = new ScalesStatusConsumer();
+		this.statusHandle = this.port.subscribe(this.statusConsumer);
 	}
 
 }

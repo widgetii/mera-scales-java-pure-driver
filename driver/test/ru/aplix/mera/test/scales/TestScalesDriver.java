@@ -10,7 +10,8 @@ import ru.aplix.mera.scales.backend.*;
 public class TestScalesDriver implements ScalesDriver {
 
 	private final String deviceId;
-	private TestScalesStatusUpdate status;
+	private final LinkedBlockingQueue<TestScalesStatusUpdate> statuses =
+			new LinkedBlockingQueue<>();
 	private final LinkedBlockingQueue<TestWeightUpdate> weights =
 			new LinkedBlockingQueue<>();
 
@@ -30,44 +31,44 @@ public class TestScalesDriver implements ScalesDriver {
 		return new TestScalesStatusUpdate(new TestScalesDevice(getDeviceId()));
 	}
 
-	public synchronized void setStatus(TestScalesStatusUpdate status) {
-		this.status = status;
-		notifyAll();
+	public void sendStatus(TestScalesStatusUpdate status) {
+		this.statuses.add(status);
 	}
 
 	public void stop() {
-		setStatus(STOP_TEST);
+		sendStatus(STOP_TEST);
 		addWeight(new TestWeightUpdate(STOP_TEST));
 	}
 
 	public void addWeight(TestWeightUpdate weight) {
-		try {
-			this.weights.put(weight);
-		} catch (InterruptedException e) {
-			throw new IllegalStateException(e);
-		}
+		this.weights.add(weight);
 	}
 
 	@Override
 	public void initScalesDriver(ScalesDriverContext context) {
-		context.setConfig(context.getConfig().setWeighingPeriod(10));
+		context.setConfig(
+				context.getConfig()
+				.setMinReconnectDelay(10)
+				.setMaxReconnectDelay(50)
+				.setWeighingPeriod(10));
 	}
 
 	@Override
 	public synchronized ScalesStatusUpdate requestStatus(
 			ScalesRequest request)
 	throws Exception {
-		while (this.status == null) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
+		try {
+
+			final TestScalesStatusUpdate status = this.statuses.take();
+
+			if (status.isStopTest()) {
 				return null;
 			}
-		}
-		if (this.status.isStopTest()) {
+
+			return status;
+		} catch (InterruptedException e) {
 			return null;
 		}
-		return this.status;
 	}
 
 	@Override
