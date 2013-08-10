@@ -69,7 +69,7 @@ public class ScalesStatusMessage {
 		if (!update.getScalesStatus().isError()) {
 			return true;
 		}
-		return Objects.equals(getScalesError(), update.getScalesError());
+		return !Objects.equals(getScalesError(), update.getScalesError());
 	}
 
 }
