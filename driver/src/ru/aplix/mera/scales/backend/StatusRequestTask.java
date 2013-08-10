@@ -21,8 +21,8 @@ final class StatusRequestTask implements Runnable {
 	@Override
 	public void run() {
 
+		final long start = System.currentTimeMillis();
 		final StatusRequest request = new StatusRequest(this.backend);
-		final long now = System.currentTimeMillis();
 		ScalesStatusUpdate statusUpdate = null;
 
 		try {
@@ -38,17 +38,19 @@ final class StatusRequestTask implements Runnable {
 			return;
 		}
 
-		reschedule(now);
+		reschedule(start);
 	}
 
-	private void reschedule(long now) {
+	private void reschedule(long start) {
 
 		final long newPeriod = Math.min(
 				this.period * 2,
 				this.backend.config().getMaxReconnectDelay());
+		final long nextStart = start + this.period;
+		final long delay = nextStart - System.currentTimeMillis();
 
 		new StatusRequestTask(this.backend)
-		.schedule(now + this.period, newPeriod);
+		.schedule(delay < 0 ? 0 : delay, newPeriod);
 	}
 
 	private static final class StatusRequest extends ScalesRequest {
