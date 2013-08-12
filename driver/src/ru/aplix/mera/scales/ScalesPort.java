@@ -48,6 +48,7 @@ public class ScalesPort
 
 	@Override
 	protected void startService() {
+		this.status = null;
 		backend().subscribe(this.statusListener);
 	}
 
@@ -109,6 +110,7 @@ public class ScalesPort
 
 		@Override
 		protected void firstSubscribed(LoadHandle handle) {
+			this.load = null;
 			this.port.weightListener.start();
 			super.firstSubscribed(handle);
 		}
@@ -154,6 +156,7 @@ public class ScalesPort
 
 		@Override
 		protected void firstSubscribed(WeightHandle handle) {
+			this.weight = null;
 			this.port.weightListener.start();
 			super.firstSubscribed(handle);
 		}

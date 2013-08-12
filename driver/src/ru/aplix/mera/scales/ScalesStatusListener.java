@@ -19,6 +19,7 @@ final class ScalesStatusListener
 	@Override
 	public void consumerSubscribed(ScalesBackendHandle handle) {
 		this.handle = handle;
+		this.lastStatus = null;
 	}
 
 	@Override
