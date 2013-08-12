@@ -25,7 +25,7 @@ public class ScalesBackend
 			new WeightSubscription(this);
 	private final Weighing weighing;
 	private ScheduledExecutorService executor;
-	private volatile Runnable interruptAction;
+	private volatile InterruptAction interruptAction;
 
 	public ScalesBackend(ScalesDriver driver) {
 		this.driver = driver;
@@ -95,10 +95,10 @@ public class ScalesBackend
 
 	final void interrupt() {
 
-		final Runnable interruptAction = this.interruptAction;
+		final InterruptAction interruptAction = this.interruptAction;
 
 		if (interruptAction != null) {
-			this.interruptAction.run();
+			this.interruptAction.interrupt();
 		}
 	}
 
@@ -109,7 +109,7 @@ public class ScalesBackend
 				config().getMinReconnectDelay());
 	}
 
-	void onInterrupt(Runnable interruptAction) {
+	void onInterrupt(InterruptAction interruptAction) {
 		this.interruptAction = interruptAction;
 	}
 

@@ -25,7 +25,7 @@ public class ScalesRequest extends ScalesReceiver {
 	 * @param action action to perform on interrupt, or <code>null</code> to do
 	 * nothing.
 	 */
-	public void onInterrupt(Runnable action) {
+	public void onInterrupt(InterruptAction action) {
 		backend().onInterrupt(action);
 	}
 
