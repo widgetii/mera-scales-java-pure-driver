@@ -100,7 +100,7 @@ final class TestScalesService extends ScalesService {
 		}
 
 		@Override
-		public String[] scalesDeviceIds() {
+		public String[] scalesPortIds() {
 
 			final Set<String> ids = this.service.driversByPortId.keySet();
 

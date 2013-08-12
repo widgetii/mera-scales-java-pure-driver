@@ -79,8 +79,8 @@ public class ScalesDiscovery {
 
 			final ScalesProtocol protocol = factory.getScalesProtocol();
 
-			for (String deviceId : factory.scalesDeviceIds()) {
-				addPortId(protocol, deviceId);
+			for (String portId : factory.scalesPortIds()) {
+				addPortId(protocol, portId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

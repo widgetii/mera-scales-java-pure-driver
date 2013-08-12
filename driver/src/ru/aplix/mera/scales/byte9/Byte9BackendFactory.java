@@ -19,7 +19,7 @@ public class Byte9BackendFactory implements ScalesBackendFactory {
 	}
 
 	@Override
-	public String[] scalesDeviceIds() {
+	public String[] scalesPortIds() {
 
 		final Enumeration<CommPortIdentifier> ids =
 				getPortIdentifiers();
