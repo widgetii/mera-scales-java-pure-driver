@@ -69,7 +69,7 @@ public class ScalesService {
 	protected ScalesPort openPort(ScalesPortId portId) {
 
 		final ScalesBackend backend =
-				portId.getProtocol().createBackend(portId.getDeviceId());
+				portId.getProtocol().createBackend(portId.getPortId());
 
 		return new ScalesPort(backend);
 	}

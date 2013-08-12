@@ -29,13 +29,13 @@ public abstract class ScalesProtocol {
 	}
 
 	/**
-	 * Constructs a scales backend for the given device.
+	 * Constructs a scales backend for the given port.
 	 *
-	 * @param deviceId scales device {@link ScalesPortId#getDeviceId()
+	 * @param portId scales port {@link ScalesPortId#getPortId()
 	 * identifier}.
 	 *
 	 * @return new scales backend.
 	 */
-	protected abstract ScalesBackend createBackend(String deviceId);
+	protected abstract ScalesBackend createBackend(String portId);
 
 }

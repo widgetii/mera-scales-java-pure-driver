@@ -7,10 +7,10 @@ import ru.aplix.mera.scales.backend.*;
 
 public class Byte9Driver implements ScalesDriver {
 
-	private String deviceId = "COM6";
+	private final String portName;
 
-	public Byte9Driver(String deviceId) {
-		this.deviceId = deviceId;
+	public Byte9Driver(String portName) {
+		this.portName = portName;
 	}
 
 	@Override
@@ -23,14 +23,14 @@ public class Byte9Driver implements ScalesDriver {
 	throws Exception {
 
 		final Byte9Packet response =
-				new Byte9Session(request, this.deviceId)
+				new Byte9Session(request, this.portName)
 				.send(byte9DeviceIdRequest());
 
 		if (response == null) {
 			return null;
 		}
 
-		return byte9Status(this.deviceId, response);
+		return byte9Status(this.portName, response);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Byte9Driver implements ScalesDriver {
 			ScalesRequest request)
 	throws Exception {
 
-		final Byte9Session session = new Byte9Session(request, this.deviceId);
+		final Byte9Session session = new Byte9Session(request, this.portName);
 		final Byte9Packet response =
 				session.send(Byte9Packet.byte9WeightRequest());
 

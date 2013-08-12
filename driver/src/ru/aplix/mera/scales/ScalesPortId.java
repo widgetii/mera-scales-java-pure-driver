@@ -9,28 +9,28 @@ import static java.util.Objects.requireNonNull;
 public final class ScalesPortId {
 
 	private final ScalesService scalesService;
-	private final String deviceId;
+	private final String portId;
 	private final ScalesProtocol protocol;
 	private ScalesPort port;
 
 	ScalesPortId(
 			ScalesService scalesService,
-			String deviceId,
+			String portId,
 			ScalesProtocol protocol) {
-		requireNonNull(deviceId, "Scales device identifier not specified");
+		requireNonNull(portId, "Scales device identifier not specified");
 		requireNonNull(protocol, "Scales protocol not specified");
 		this.scalesService = scalesService;
-		this.deviceId = deviceId;
+		this.portId = portId;
 		this.protocol = protocol;
 	}
 
 	/**
-	 * Scales device identifier.
+	 * Scales port identifier.
 	 *
-	 * @return string identifier passed to constructor.
+	 * @return string identifier of the port the scales connected to.
 	 */
-	public final String getDeviceId() {
-		return this.deviceId;
+	public final String getPortId() {
+		return this.portId;
 	}
 
 	/**
@@ -62,7 +62,7 @@ public final class ScalesPortId {
 		if (this.protocol == null) {
 			return super.toString();
 		}
-		return this.deviceId + " (" + this.protocol.getProtocolName() + ')';
+		return this.portId + " (" + this.protocol.getProtocolName() + ')';
 	}
 
 }

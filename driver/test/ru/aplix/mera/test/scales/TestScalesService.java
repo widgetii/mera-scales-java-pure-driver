@@ -18,19 +18,19 @@ final class TestScalesService extends ScalesService {
 
 	private final TestScalesProtocol protocol = new TestScalesProtocol();
 	private final HashSet<ScalesProtocol> discoveredProtocols = new HashSet<>();
-	private final HashMap<String, TestScalesDriver> driversById =
+	private final HashMap<String, TestScalesDriver> driversByPortId =
 			new HashMap<>();
 
-	public void addTestDevice(String deviceId) {
-		this.driversById.put(deviceId, new TestScalesDriver(deviceId));
+	public void addTestDevice(String portId) {
+		this.driversByPortId.put(portId, new TestScalesDriver(portId));
 	}
 
-	public TestScalesDriver getDriver(String deviceId) {
+	public TestScalesDriver getDriver(String portId) {
 
-		final TestScalesDriver driver = this.driversById.get(deviceId);
+		final TestScalesDriver driver = this.driversByPortId.get(portId);
 
 		if (driver == null) {
-			throw new IllegalArgumentException("No such device: " + deviceId);
+			throw new IllegalArgumentException("No such device: " + portId);
 		}
 
 		return driver;
@@ -52,8 +52,8 @@ final class TestScalesService extends ScalesService {
 		}
 
 		@Override
-		protected ScalesBackend createBackend(String deviceId) {
-			return new ScalesBackend(getDriver(deviceId));
+		protected ScalesBackend createBackend(String portId) {
+			return new ScalesBackend(getDriver(portId));
 		}
 
 	}
@@ -102,7 +102,7 @@ final class TestScalesService extends ScalesService {
 		@Override
 		public String[] scalesDeviceIds() {
 
-			final Set<String> ids = this.service.driversById.keySet();
+			final Set<String> ids = this.service.driversByPortId.keySet();
 
 			return ids.toArray(new String[ids.size()]);
 		}

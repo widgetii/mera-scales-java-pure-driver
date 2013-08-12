@@ -14,8 +14,8 @@ public final class Byte9ScalesProtocol extends ScalesProtocol {
 	}
 
 	@Override
-	protected ScalesBackend createBackend(String deviceId) {
-		return new ScalesBackend(new Byte9Driver(deviceId));
+	protected ScalesBackend createBackend(String portId) {
+		return new ScalesBackend(new Byte9Driver(portId));
 	}
 
 }

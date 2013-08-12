@@ -87,7 +87,7 @@ public final class PortOption
 			return protoCmp;
 		}
 
-		return pid1.getDeviceId().compareTo(pid2.getDeviceId());
+		return pid1.getPortId().compareTo(pid2.getPortId());
 	}
 
 	@Override

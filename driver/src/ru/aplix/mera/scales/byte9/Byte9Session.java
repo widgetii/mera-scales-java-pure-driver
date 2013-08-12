@@ -33,12 +33,12 @@ final class Byte9Session {
 
 	Byte9Session(
 			ScalesRequest scalesRequest,
-			String deviceId)
+			String portName)
 	throws NoSuchPortException, PortInUseException {
 		this.scalesRequest = scalesRequest;
-		addPortName(deviceId, PORT_SERIAL, null);// Prevent occasional opening.
+		addPortName(portName, PORT_SERIAL, null);// Prevent occasional opening.
 
-		final CommPortIdentifier portId = getPortIdentifier(deviceId);
+		final CommPortIdentifier portId = getPortIdentifier(portName);
 
 		this.port = portId.openSerial("Mera scales test", 2000, INIT_PORT_MODE);
 	}
