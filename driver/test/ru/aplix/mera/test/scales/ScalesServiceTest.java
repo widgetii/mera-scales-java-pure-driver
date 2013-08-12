@@ -2,12 +2,11 @@ package ru.aplix.mera.test.scales;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static ru.aplix.mera.scales.ScalesStatus.SCALES_CONNECTED;
 import static ru.aplix.mera.scales.ScalesStatus.SCALES_ERROR;
 import static ru.aplix.mera.scales.byte9.Byte9ScalesProtocol.BYTE9_SCALES_PROTOCOL;
-
-import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +35,7 @@ public class ScalesServiceTest {
 	}
 
 	@Test
-	public void connect() throws InterruptedException {
+	public void connect() {
 		openPort();
 
 		assertThat(this.statusConsumer.getMessages().isEmpty(), is(true));
@@ -46,8 +45,7 @@ public class ScalesServiceTest {
 
 		this.driver.sendStatus(connectedStatus);
 
-		final ScalesStatusMessage status =
-				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
+		final ScalesStatusMessage status = this.statusConsumer.nextMessage();
 
 		assertThat(status, notNullValue());
 		assertThat(status.getScalesStatus(), is(SCALES_CONNECTED));
@@ -57,7 +55,7 @@ public class ScalesServiceTest {
 	}
 
 	@Test
-	public void noConnection() throws InterruptedException {
+	public void noConnection() {
 		openPort();
 
 		final TestScalesStatusUpdate errorStatus =
@@ -65,8 +63,7 @@ public class ScalesServiceTest {
 
 		this.driver.sendStatus(errorStatus);
 
-		final ScalesStatusMessage status =
-				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
+		final ScalesStatusMessage status = this.statusConsumer.nextMessage();
 
 		assertThat(status, notNullValue());
 		assertThat(status.getScalesStatus(), is(SCALES_ERROR));
@@ -77,7 +74,7 @@ public class ScalesServiceTest {
 	}
 
 	@Test
-	public void reconnection() throws InterruptedException {
+	public void reconnection() {
 		openPort();
 
 		final TestScalesStatusUpdate errorStatus =
@@ -91,21 +88,42 @@ public class ScalesServiceTest {
 
 		this.driver.sendStatus(connectedStatus);
 
-		final ScalesStatusMessage status1 =
-				this.statusConsumer.getMessages().take();
+		final ScalesStatusMessage status1 = this.statusConsumer.nextMessage();
 
 		assertThat(status1, notNullValue());
 		assertThat(status1.getScalesStatus(), is(SCALES_ERROR));
 		assertThat(status1.getScalesError(), is(errorStatus.getScalesError()));
 
-		final ScalesStatusMessage status2 =
-				this.statusConsumer.getMessages().take();
+		final ScalesStatusMessage status2 = this.statusConsumer.nextMessage();
 
 		assertThat(status2, notNullValue());
 		assertThat(status2.getScalesStatus(), is(SCALES_CONNECTED));
 		assertThat(
 				status2.getScalesDevice(),
 				is(connectedStatus.getScalesDevice()));
+	}
+
+	@Test
+	public void lastStatusReported() {
+		openPort();
+
+		assertThat(this.statusConsumer.getMessages().isEmpty(), is(true));
+
+		final TestScalesStatusUpdate connectedStatus =
+				this.driver.connectedStatus();
+
+		this.driver.sendStatus(connectedStatus);
+
+		final ScalesStatusMessage status1 = this.statusConsumer.nextMessage();
+
+		final ScalesStatusConsumer consumer2 = new ScalesStatusConsumer();
+		final ScalesPortHandle handle2 = this.port.subscribe(consumer2);
+
+		final ScalesStatusMessage status2 = consumer2.getMessages().poll();
+
+		assertThat(status1, sameInstance(status2));
+
+		handle2.unsubscribe();
 	}
 
 	@After

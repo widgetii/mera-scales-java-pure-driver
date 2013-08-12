@@ -32,6 +32,10 @@ final class WeightUpdatesListener
 		this.port = port;
 	}
 
+	public final boolean isSteady() {
+		return this.steady;
+	}
+
 	public final synchronized void start() {
 		if (this.started++ == 0) {
 			this.port.backendHandle().requestWeight(this);

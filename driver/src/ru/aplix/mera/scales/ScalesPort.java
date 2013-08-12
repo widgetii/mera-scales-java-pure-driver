@@ -31,6 +31,7 @@ public class ScalesPort
 			new WeightSubscriptions(this);
 	private final WeightUpdatesListener weightListener =
 			new WeightUpdatesListener(this);
+	private ScalesStatusMessage status;
 
 	ScalesPort(ScalesBackend backend) {
 		requireNonNull(backend, "Scales backend not specified");
@@ -48,6 +49,18 @@ public class ScalesPort
 	@Override
 	protected void startService() {
 		backend().subscribe(this.statusListener);
+	}
+
+	@Override
+	protected void subscribed(ScalesPortHandle handle) {
+		if (this.status != null) {
+			handle.getConsumer().messageReceived(this.status);
+		}
+	}
+
+	@Override
+	protected void messageReceived(ScalesStatusMessage message) {
+		this.status = message;
 	}
 
 	@Override
@@ -80,6 +93,7 @@ public class ScalesPort
 			extends MeraSubscriptions<LoadHandle, LoadMessage> {
 
 		private final ScalesPort port;
+		private LoadMessage load;
 
 		LoadSubscriptions(ScalesPort port) {
 			this.port = port;
@@ -100,6 +114,19 @@ public class ScalesPort
 		}
 
 		@Override
+		protected void subscribed(LoadHandle handle) {
+			super.subscribed(handle);
+			if (this.load != null && !this.port.weightListener.isSteady()) {
+				handle.getConsumer().messageReceived(this.load);
+			}
+		}
+
+		@Override
+		protected void messageReceived(LoadMessage message) {
+			this.load = message;
+		}
+
+		@Override
 		protected void lastUnsubscribed(LoadHandle handle) {
 			super.lastUnsubscribed(handle);
 			this.port.weightListener.stop();
@@ -111,6 +138,7 @@ public class ScalesPort
 			extends MeraSubscriptions<WeightHandle, WeightMessage> {
 
 		private final ScalesPort port;
+		private WeightMessage weight;
 
 		WeightSubscriptions(ScalesPort port) {
 			this.port = port;
@@ -128,6 +156,19 @@ public class ScalesPort
 		protected void firstSubscribed(WeightHandle handle) {
 			this.port.weightListener.start();
 			super.firstSubscribed(handle);
+		}
+
+		@Override
+		protected void subscribed(WeightHandle handle) {
+			super.subscribed(handle);
+			if (this.weight != null && this.port.weightListener.isSteady()) {
+				handle.getConsumer().messageReceived(this.weight);
+			}
+		}
+
+		@Override
+		protected void messageReceived(WeightMessage message) {
+			this.weight = message;
 		}
 
 		@Override

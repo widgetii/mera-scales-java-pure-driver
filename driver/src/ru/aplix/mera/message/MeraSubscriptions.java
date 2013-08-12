@@ -85,20 +85,6 @@ public abstract class MeraSubscriptions<H extends MeraHandle<H, M>, M> {
 	}
 
 	/**
-	 * Receives the message before any subscriber.
-	 *
-	 * <p>This method is called from the {@link #sendMessage(Object)} one
-	 * right before sending the message to subscribers. This method is called
-	 * inside a read lock.</p>
-	 *
-	 * <p>Does nothing by default.</p>
-	 *
-	 * @param message message received.
-	 */
-	protected void messageReceived(M message) {
-	}
-
-	/**
 	 * Creates a subscription handle for the given consumer.
 	 *
 	 * @param consumer consumer to subscribe.
@@ -135,6 +121,20 @@ public abstract class MeraSubscriptions<H extends MeraHandle<H, M>, M> {
 	 */
 	protected void subscribed(H handle) {
 		handle.subscribed();
+	}
+
+	/**
+	 * Receives the message before any subscriber.
+	 *
+	 * <p>This method is called from the {@link #sendMessage(Object)} one
+	 * right before sending the message to subscribers. This method is called
+	 * inside a read lock.</p>
+	 *
+	 * <p>Does nothing by default.</p>
+	 *
+	 * @param message message received.
+	 */
+	protected void messageReceived(M message) {
 	}
 
 	/**
