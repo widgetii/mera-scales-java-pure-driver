@@ -4,12 +4,13 @@ package ru.aplix.mera.scales.backend;
 /**
  * The weight request.
  *
- * <p>This class is passed to the {@link Weighing#initWeighting(WeightRequest)
- * weighing process}, so that it can report the weight updates.</p>
+ * <p>An instance of this class is passed to the
+ * {@link Weighing#initWeighting(WeightReceiver) weighing process}, so that the
+ * latter can report the weight updates.</p>
  */
-public class WeightRequest extends ScalesRequest {
+public class WeightReceiver extends ScalesReceiver {
 
-	WeightRequest(ScalesBackend backend) {
+	WeightReceiver(ScalesBackend backend) {
 		super(backend);
 	}
 

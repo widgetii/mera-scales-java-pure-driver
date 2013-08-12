@@ -7,7 +7,7 @@ package ru.aplix.mera.scales.backend;
  * <p>A {@link ScalesDriver scales driver} normally returns the weight
  * when {@link ScalesDriver#requestWeight(ScalesRequest) requested}. The backend
  * {@link ScalesBackendConfig#getWeighingPeriod() periodically} requests the
- * deriver.</p>
+ * driver.</p>
  *
  * <p>Alternatively, the driver can automatically report the measured weight.
  * To do so, the weighing process instance should be
@@ -20,9 +20,10 @@ public interface Weighing {
 	/**
 	 * Initializes the weighting.
 	 *
-	 * @param weightRequest weight request to report the weight updates through.
+	 * @param weightReceiver weight receiver to report the weight updates
+	 * through.
 	 */
-	void initWeighting(WeightRequest weightRequest);
+	void initWeighting(WeightReceiver weightReceiver);
 
 	/**
 	 * Starts the weighing.

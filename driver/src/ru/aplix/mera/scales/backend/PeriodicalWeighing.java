@@ -11,14 +11,14 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 	private final ScalesBackend backend;
 	private ScheduledFuture<?> future;
 	private boolean enabled;
-	private WeightRequest weightRequest;
+	private WeightReceiver weightRequest;
 
 	PeriodicalWeighing(ScalesBackend backend) {
 		this.backend = backend;
 	}
 
 	@Override
-	public void initWeighting(WeightRequest weightRequest) {
+	public void initWeighting(WeightReceiver weightRequest) {
 		this.weightRequest = weightRequest;
 	}
 

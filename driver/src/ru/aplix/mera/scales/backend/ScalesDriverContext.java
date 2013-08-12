@@ -74,7 +74,7 @@ public class ScalesDriverContext {
 		if (this.weighing == null) {
 			this.weighing = new PeriodicalWeighing(this.backend);
 		}
-		this.weighing.initWeighting(new WeightRequest(this.backend));
+		this.weighing.initWeighting(new WeightReceiver(this.backend));
 	}
 
 	private void ensureNotInitialized() {
