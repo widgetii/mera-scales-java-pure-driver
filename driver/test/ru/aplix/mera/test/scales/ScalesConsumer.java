@@ -1,5 +1,9 @@
 package ru.aplix.mera.test.scales;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -32,10 +36,19 @@ public class ScalesConsumer<H extends MeraHandle<H, M>, M>
 
 	public M nextMessage() {
 		try {
-			return this.messages.poll(1, TimeUnit.SECONDS);
+
+			final M message = this.messages.poll(1, TimeUnit.SECONDS);
+
+			assertThat(message, notNullValue());
+
+			return message;
 		} catch (InterruptedException e) {
 			throw new IllegalStateException(e);
 		}
+	}
+
+	public void noMoreMessages() {
+		assertThat(this.messages.peek(), nullValue());
 	}
 
 }
