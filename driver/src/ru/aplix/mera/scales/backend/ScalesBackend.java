@@ -23,8 +23,9 @@ public class ScalesBackend
 			new ErrorSubscriptions();
 	private final WeightSubscription weightSubscription =
 			new WeightSubscription(this);
-	private ScheduledExecutorService executor;
 	private final Weighing weighing;
+	private ScheduledExecutorService executor;
+	private volatile Runnable interruptAction;
 
 	public ScalesBackend(ScalesDriver driver) {
 		this.driver = driver;
@@ -83,6 +84,7 @@ public class ScalesBackend
 
 	@Override
 	protected void stopService() {
+		interrupt();
 		this.executor.shutdownNow();
 		this.executor = null;
 	}
@@ -91,11 +93,24 @@ public class ScalesBackend
 		return this.executor;
 	}
 
+	final void interrupt() {
+
+		final Runnable interruptAction = this.interruptAction;
+
+		if (interruptAction != null) {
+			this.interruptAction.run();
+		}
+	}
+
 	final void refreshStatus() {
 		this.weighing.suspendWeighing();
 		new StatusRequestTask(this).schedule(
 				0,
 				config().getMinReconnectDelay());
+	}
+
+	void onInterrupt(Runnable interruptAction) {
+		this.interruptAction = interruptAction;
 	}
 
 	final boolean updateStatus(ScalesStatusUpdate status) {

@@ -30,15 +30,12 @@ final class StatusRequestTask implements Runnable {
 		} catch (Throwable e) {
 			this.backend.errorSubscriptions()
 			.sendMessage(new ThrowableErrorMessage(e));
+		} finally {
+			request.done();
 		}
-
-		final ScalesStatusUpdate lastUpdate = request.lastUpdate(statusUpdate);
-
-		if (lastUpdate != null && this.backend.updateStatus(lastUpdate)) {
-			return;
+		if (!request.reportStatus(statusUpdate)) {
+			reschedule(start);
 		}
-
-		reschedule(start);
 	}
 
 	private void reschedule(long start) {
@@ -66,7 +63,18 @@ final class StatusRequestTask implements Runnable {
 			this.statusUpdate = statusUpdate;
 		}
 
-		final ScalesStatusUpdate lastUpdate(ScalesStatusUpdate statusUpdate) {
+		final boolean reportStatus(ScalesStatusUpdate statusUpdate) {
+
+			final ScalesStatusUpdate lastUpdate = lastUpdate(statusUpdate);
+
+			if (lastUpdate != null && backend().updateStatus(lastUpdate)) {
+				return true;
+			}
+
+			return false;
+		}
+
+		private ScalesStatusUpdate lastUpdate(ScalesStatusUpdate statusUpdate) {
 			if (statusUpdate != null) {
 				return statusUpdate;
 			}
