@@ -56,7 +56,9 @@ final class WeightUpdatesListener
 
 	@Override
 	public void messageReceived(WeightUpdate update) {
-		if (this.steady) {
+		if (update.isSteadyWeight()) {
+			reportWeight(update);
+		} else if (this.steady) {
 			checkLoad(update);
 		} else {
 			checkSteadyness(update);
@@ -95,10 +97,6 @@ final class WeightUpdatesListener
 	}
 
 	private void checkSteadyness(WeightUpdate update) {
-		if (update.isSteadyWeight()) {
-			reportWeight(update);
-			return;
-		}
 
 		final int len = this.lastUpdates.length();
 		final int firstIdx = len - STEADY_MEASURES;
