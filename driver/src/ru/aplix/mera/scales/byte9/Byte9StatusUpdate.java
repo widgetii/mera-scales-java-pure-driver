@@ -1,5 +1,7 @@
 package ru.aplix.mera.scales.byte9;
 
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_CONNECTED;
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_ERROR;
 import static ru.aplix.mera.scales.byte9.Byte9Command.BYTE9_DEVICE_ID_REQUEST;
 import ru.aplix.mera.scales.ScalesDevice;
 import ru.aplix.mera.scales.ScalesStatus;
@@ -42,9 +44,9 @@ public class Byte9StatusUpdate implements ScalesStatusUpdate {
 	@Override
 	public ScalesStatus getScalesStatus() {
 		if (this.packet == null) {
-			return ScalesStatus.ERROR;
+			return SCALES_ERROR;
 		}
-		return ScalesStatus.CONNECTED;
+		return SCALES_CONNECTED;
 	}
 
 	@Override

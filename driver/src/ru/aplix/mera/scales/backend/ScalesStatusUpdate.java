@@ -24,7 +24,7 @@ public interface ScalesStatusUpdate {
 	 * Scales device info.
 	 *
 	 * @return scales device info or <code>null</code> if it can not be obtained
-	 * e.g. due to {@link ScalesStatus#ERROR error}.
+	 * e.g. due to {@link ScalesStatus#SCALES_ERROR error}.
 	 */
 	ScalesDevice getScalesDevice();
 
@@ -32,7 +32,7 @@ public interface ScalesStatusUpdate {
 	 * Returns a scales error.
 	 *
 	 * @return error message or <code>null</code> if scales status is not
-	 * {@link ScalesStatus#ERROR} or there is no message to display.
+	 * {@link ScalesStatus#SCALES_ERROR} or there is no message to display.
 	 */
 	String getScalesError();
 

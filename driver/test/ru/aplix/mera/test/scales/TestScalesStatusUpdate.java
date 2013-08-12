@@ -1,5 +1,7 @@
 package ru.aplix.mera.test.scales;
 
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_CONNECTED;
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_ERROR;
 import ru.aplix.mera.scales.ScalesDevice;
 import ru.aplix.mera.scales.ScalesStatus;
 import ru.aplix.mera.scales.backend.ScalesRequest;
@@ -39,8 +41,7 @@ public class TestScalesStatusUpdate implements ScalesStatusUpdate {
 
 	@Override
 	public ScalesStatus getScalesStatus() {
-		return this.device != null
-				? ScalesStatus.CONNECTED : ScalesStatus.ERROR;
+		return this.device != null ? SCALES_CONNECTED : SCALES_ERROR;
 	}
 
 	@Override

@@ -9,15 +9,15 @@ public enum ScalesStatus {
 	/**
 	 * Connection to scales established.
 	 */
-	CONNECTED,
+	SCALES_CONNECTED,
 
 	/**
 	 * Error connecting to scales.
 	 */
-	ERROR;
+	SCALES_ERROR;
 
 	public final boolean isError() {
-		return this == ERROR;
+		return this == SCALES_ERROR;
 	}
 
 }

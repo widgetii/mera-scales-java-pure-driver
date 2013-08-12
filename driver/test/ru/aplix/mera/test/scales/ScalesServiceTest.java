@@ -3,6 +3,8 @@ package ru.aplix.mera.test.scales;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_CONNECTED;
+import static ru.aplix.mera.scales.ScalesStatus.SCALES_ERROR;
 import static ru.aplix.mera.scales.byte9.Byte9ScalesProtocol.BYTE9_SCALES_PROTOCOL;
 
 import java.util.concurrent.TimeUnit;
@@ -48,7 +50,7 @@ public class ScalesServiceTest {
 				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
 
 		assertThat(status, notNullValue());
-		assertThat(status.getScalesStatus(), is(ScalesStatus.CONNECTED));
+		assertThat(status.getScalesStatus(), is(SCALES_CONNECTED));
 		assertThat(
 				status.getScalesDevice(),
 				is(connectedStatus.getScalesDevice()));
@@ -67,7 +69,7 @@ public class ScalesServiceTest {
 				this.statusConsumer.getMessages().poll(1, TimeUnit.SECONDS);
 
 		assertThat(status, notNullValue());
-		assertThat(status.getScalesStatus(), is(ScalesStatus.ERROR));
+		assertThat(status.getScalesStatus(), is(SCALES_ERROR));
 		assertThat(status.getScalesError(), is(errorStatus.getScalesError()));
 
 		this.statusHandle.unsubscribe();
@@ -93,14 +95,14 @@ public class ScalesServiceTest {
 				this.statusConsumer.getMessages().take();
 
 		assertThat(status1, notNullValue());
-		assertThat(status1.getScalesStatus(), is(ScalesStatus.ERROR));
+		assertThat(status1.getScalesStatus(), is(SCALES_ERROR));
 		assertThat(status1.getScalesError(), is(errorStatus.getScalesError()));
 
 		final ScalesStatusMessage status2 =
 				this.statusConsumer.getMessages().take();
 
 		assertThat(status2, notNullValue());
-		assertThat(status2.getScalesStatus(), is(ScalesStatus.CONNECTED));
+		assertThat(status2.getScalesStatus(), is(SCALES_CONNECTED));
 		assertThat(
 				status2.getScalesDevice(),
 				is(connectedStatus.getScalesDevice()));

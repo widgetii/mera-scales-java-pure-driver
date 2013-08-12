@@ -77,7 +77,7 @@ public class TesterStatusBar
 
 	private void updateStatus(ScalesStatusMessage message) {
 		switch (message.getScalesStatus()) {
-		case ERROR:
+		case SCALES_ERROR:
 
 			final String error = message.getScalesError();
 
@@ -90,7 +90,7 @@ public class TesterStatusBar
 			this.device.setText("Ошибка подключения");
 
 			break;
-		case CONNECTED:
+		case SCALES_CONNECTED:
 
 			final ScalesDevice device = message.getScalesDevice();
 			final String deviceDesc =
