@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import purejavacomm.*;
+import ru.aplix.mera.scales.backend.InterruptAction;
 import ru.aplix.mera.scales.backend.ScalesRequest;
 
 
@@ -51,16 +52,20 @@ final class Byte9Session {
 
 		final ResponseListener listener = new ResponseListener();
 
+		this.scalesRequest.onInterrupt(listener);
 		this.port.addEventListener(listener);
 		this.port.notifyOnDataAvailable(true);
-		sendPacket(request);
+		sendPacket(listener, request);
 		if (!listener.waitForResponse(1000L)) {
-			sendPacket(request);
+			sendPacket(listener, request);
 			if (!listener.waitForResponse(1000L)) {
 				this.scalesRequest.updateStatus(
 						byte9ErrorStatus("No response"));
 				return null;
 			}
+		}
+		if (listener.isInterrupted()) {
+			return null;
 		}
 
 		this.responseTime = listener.responseTime;
@@ -69,6 +74,7 @@ final class Byte9Session {
 	}
 
 	private void sendPacket(
+			ResponseListener listener,
 			Byte9Packet packet)
 	throws Exception {
 
@@ -76,7 +82,9 @@ final class Byte9Session {
 
 		this.port.setSerialPortParams(ADDRESS_PARAMS);
 		this.port.getOutputStream().write(rawData, 0, 3);
-		Thread.sleep(200);
+		if (listener.waitForResponse(200)) {
+			return;
+		}
 		this.port.setSerialPortParams(COMMAND_PARAMS);
 		this.port.getOutputStream().write(rawData, 3, rawData.length);
 	}
@@ -148,14 +156,26 @@ final class Byte9Session {
 	}
 
 	private static final class ResponseListener
-			implements SerialPortEventListener {
+			implements SerialPortEventListener, InterruptAction {
 
-		private boolean hasResponse;
 		private long responseTime;
+		private boolean interrupted;
+		private boolean hasResponse;
 
 		@Override
 		public void serialEvent(SerialPortEvent ev) {
 			responseReceived();
+		}
+
+		public final boolean isInterrupted() {
+			return this.interrupted;
+		}
+
+		@Override
+		public synchronized void interrupt() {
+			this.interrupted = true;
+			this.hasResponse = true;
+			notifyAll();
 		}
 
 		private synchronized void responseReceived() {
