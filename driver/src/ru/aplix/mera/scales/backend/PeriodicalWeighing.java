@@ -30,13 +30,12 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 
 		try {
 			weightUpdate = this.backend.driver().requestWeight(request);
+			if (weightUpdate != null) {
+				this.weightRequest.updateWeight(weightUpdate);
+			}
 		} catch (Throwable e) {
 			this.backend.errorSubscriptions()
 			.sendMessage(new ThrowableErrorMessage(e));
-			return;
-		}
-		if (weightUpdate != null) {
-			this.weightRequest.updateWeight(weightUpdate);
 		}
 	}
 

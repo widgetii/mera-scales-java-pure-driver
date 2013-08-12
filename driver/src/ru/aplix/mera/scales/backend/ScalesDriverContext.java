@@ -67,16 +67,14 @@ public class ScalesDriverContext {
 	}
 
 	final Weighing getWeighting() {
-		if (this.weighing != null) {
-			return this.weighing;
-		}
-		return new PeriodicalWeighing(this.backend);
+		return this.weighing;
 	}
 
 	private void initWeightUpdater() {
-		if (this.weighing != null) {
-			this.weighing.initWeighting(new WeightRequest(this.backend));
+		if (this.weighing == null) {
+			this.weighing = new PeriodicalWeighing(this.backend);
 		}
+		this.weighing.initWeighting(new WeightRequest(this.backend));
 	}
 
 	private void ensureNotInitialized() {
