@@ -71,6 +71,7 @@ public abstract class MeraSubscriptions<H extends MeraHandle<H, M>, M> {
 
 		lock.lock();
 		try {
+			messageReceived(message);
 
 			H handle = this.first;
 
@@ -81,6 +82,20 @@ public abstract class MeraSubscriptions<H extends MeraHandle<H, M>, M> {
 		} finally {
 			lock.unlock();
 		}
+	}
+
+	/**
+	 * Receives the message before any subscriber.
+	 *
+	 * <p>This method is called from the {@link #sendMessage(Object)} one
+	 * right before sending the message to subscribers. This method is called
+	 * inside a read lock.</p>
+	 *
+	 * <p>Does nothing by default.</p>
+	 *
+	 * @param message message received.
+	 */
+	protected void messageReceived(M message) {
 	}
 
 	/**

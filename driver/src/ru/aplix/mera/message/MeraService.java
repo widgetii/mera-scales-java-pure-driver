@@ -54,6 +54,18 @@ public abstract class MeraService<H extends MeraServiceHandle<H, M>, M> {
 	protected abstract void startService();
 
 	/**
+	 * Receives the message before any subscriber.
+	 *
+	 * <p>Does nothing by default.</p>
+	 *
+	 * @param message message received.
+	 *
+	 * @see MeraSubscriptions#messageReceived(Object)
+	 */
+	protected void messageReceived(M message) {
+	}
+
+	/**
 	 * Stops the service.
 	 *
 	 * <p>This is invoked when the last subscription revoked.</p>
@@ -71,6 +83,12 @@ public abstract class MeraService<H extends MeraServiceHandle<H, M>, M> {
 		protected void firstSubscribed(H handle) {
 			startService();
 			super.firstSubscribed(handle);
+		}
+
+		@Override
+		protected void messageReceived(M message) {
+			super.messageReceived(message);
+			MeraService.this.messageReceived(message);
 		}
 
 		@Override
