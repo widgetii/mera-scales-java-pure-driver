@@ -1,7 +1,5 @@
 package ru.aplix.mera.tester;
 
-import static javax.swing.SwingUtilities.invokeLater;
-
 import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
@@ -38,13 +36,16 @@ public class TesterStatusBar
 		portSelector.addPortListener(this);
 	}
 
+	public final TesterApp app() {
+		return this.app;
+	}
+
 	@Override
 	public void portDeselected(PortOption port) {
 		this.status.setText(NOT_CONNECTED);
 		this.device.setText("");
-		if (this.handle != null) {
+		if (this.handle != null && this.handle.isSubscribed()) {
 			this.handle.unsubscribe();
-			this.handle = null;
 		}
 	}
 
@@ -67,12 +68,16 @@ public class TesterStatusBar
 
 	@Override
 	public void messageReceived(final ScalesStatusMessage message) {
-		invokeLater(new Runnable() {
+		app().perform(new Runnable() {
 			@Override
 			public void run() {
 				updateStatus(message);
 			}
 		});
+	}
+
+	@Override
+	public void consumerUnubscribed(ScalesPortHandle handle) {
 	}
 
 	private void updateStatus(ScalesStatusMessage message) {
@@ -110,10 +115,6 @@ public class TesterStatusBar
 			this.app.log(msg);
 			this.device.setText(msg);
 		}
-	}
-
-	@Override
-	public void consumerUnubscribed(ScalesPortHandle handle) {
 	}
 
 }

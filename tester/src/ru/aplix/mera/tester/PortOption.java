@@ -1,9 +1,10 @@
 package ru.aplix.mera.tester;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import ru.aplix.mera.message.MeraConsumer;
-import ru.aplix.mera.scales.ScalesPortHandle;
-import ru.aplix.mera.scales.ScalesPortId;
-import ru.aplix.mera.scales.ScalesStatusMessage;
+import ru.aplix.mera.scales.*;
 
 
 public final class PortOption
@@ -12,16 +13,19 @@ public final class PortOption
 
 	private final TesterApp app;
 	private final ScalesPortId portId;
+	private final ScalesErrorListener errorListener;
 	private ScalesPortHandle handle;
 
 	PortOption(TesterApp app) {
 		this.app = app;
 		this.portId = null;
+		this.errorListener = null;
 	}
 
 	PortOption(TesterApp app, ScalesPortId portId) {
 		this.app = app;
 		this.portId = portId;
+		this.errorListener = new ScalesErrorListener(app);
 	}
 
 	public final ScalesPortId getPortId() {
@@ -36,7 +40,7 @@ public final class PortOption
 		if (getPortId() == null) {
 			return;
 		}
-		this.app.log("Устройство: " + this);
+		this.app.log("Порт: " + this);
 		this.handle = getPortId().getPort().subscribe(this);
 	}
 
@@ -51,6 +55,7 @@ public final class PortOption
 	@Override
 	public void consumerSubscribed(ScalesPortHandle handle) {
 		this.handle = handle;
+		handle.listenForErrors(this.errorListener);
 	}
 
 	@Override
@@ -118,9 +123,55 @@ public final class PortOption
 	@Override
 	public String toString() {
 		if (this.portId == null) {
-			return "Устройство";
+			return "Порт";
 		}
 		return this.portId.toString();
+	}
+
+	private static final class ScalesErrorListener
+			implements MeraConsumer<ScalesErrorHandle, ScalesErrorMessage> {
+
+		private final TesterApp app;
+
+		ScalesErrorListener(TesterApp app) {
+			this.app = app;
+		}
+
+		@Override
+		public void consumerSubscribed(ScalesErrorHandle handle) {
+		}
+
+		@Override
+		public void messageReceived(ScalesErrorMessage message) {
+
+			final Throwable cause = message.getCause();
+
+			if (cause == null) {
+				this.app.log("ERROR: " + message.getErrorMessage());
+				return;
+			}
+			logStackTrace(cause);
+		}
+
+		@Override
+		public void consumerUnubscribed(ScalesErrorHandle handle) {
+		}
+
+		private void logStackTrace(Throwable cause) {
+
+			final StringWriter out = new StringWriter();
+			final PrintWriter writer = new PrintWriter(out);
+
+			try {
+				writer.print("ERROR: ");
+				cause.printStackTrace(writer);
+			} finally {
+				writer.close();
+			}
+
+			this.app.log(out.toString());
+		}
+
 	}
 
 }
