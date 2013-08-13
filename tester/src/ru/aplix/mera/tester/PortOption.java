@@ -41,7 +41,15 @@ public final class PortOption
 			return;
 		}
 		this.app.log("Порт: " + this);
-		this.handle = getPortId().getPort().subscribe(this);
+
+		final ScalesPort port = getPortId().getPort();
+
+		updateConfig(
+				this.app.getContent()
+				.getToolBar()
+				.getPortSelector()
+				.getConfig());
+		this.handle = port.subscribe(this);
 	}
 
 	public final void deselect() {
