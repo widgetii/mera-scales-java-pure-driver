@@ -1,6 +1,7 @@
 package ru.aplix.mera.scales.byte9;
 
 import static ru.aplix.mera.scales.byte9.Byte9Packet.byte9DeviceIdRequest;
+import static ru.aplix.mera.scales.byte9.Byte9Packet.byte9WeightRequest;
 import static ru.aplix.mera.scales.byte9.Byte9StatusUpdate.byte9Status;
 import ru.aplix.mera.scales.backend.*;
 
@@ -23,7 +24,7 @@ public class Byte9Driver implements ScalesDriver {
 	throws Exception {
 		try (Byte9Session session = new Byte9Session(request, this.portName)) {
 
-			final Byte9Packet response = session .send(byte9DeviceIdRequest());
+			final Byte9Packet response = session.send(byte9DeviceIdRequest());
 
 			if (response == null) {
 				return null;
@@ -39,8 +40,7 @@ public class Byte9Driver implements ScalesDriver {
 	throws Exception {
 		try (Byte9Session session = new Byte9Session(request, this.portName)) {
 
-			final Byte9Packet response =
-					session.send(Byte9Packet.byte9WeightRequest());
+			final Byte9Packet response = session.send(byte9WeightRequest());
 
 			if (response == null) {
 				return null;
