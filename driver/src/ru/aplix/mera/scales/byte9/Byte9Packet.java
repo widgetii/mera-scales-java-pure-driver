@@ -196,7 +196,10 @@ public class Byte9Packet {
 			return byte9LengthValidity(this.rawData.length);
 		}
 
-		final boolean crcError = calculateCRC() != crcByte();
+		// TODO: It looks like control sum algorithm is not CRC.
+		// Disable it for now.
+		// final boolean crcError = calculateCRC() != crcByte();
+		final boolean crcError = false;
 		final boolean wrongTerminator =
 				this.rawData[8] != BYTE9_TERMINATOR_BYTE;
 
