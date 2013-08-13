@@ -1,5 +1,6 @@
 package ru.aplix.mera.scales.backend;
 
+import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.ScalesErrorMessage;
 
 
@@ -14,6 +15,15 @@ public abstract class ScalesReceiver {
 
 	ScalesReceiver(ScalesBackend backend) {
 		this.backend = backend;
+	}
+
+	/**
+	 * Scales configuration.
+	 *
+	 * @return current scales configuration.
+	 */
+	public final ScalesConfig getConfig() {
+		return backend().getConfig();
 	}
 
 	/**

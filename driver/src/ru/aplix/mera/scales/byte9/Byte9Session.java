@@ -7,6 +7,7 @@ import static purejavacomm.SerialPort.PARITY_MARK;
 import static purejavacomm.SerialPort.PARITY_SPACE;
 import static purejavacomm.SerialPortMode.DEFAULT_SERIAL_PORT_MODE;
 import static ru.aplix.mera.scales.byte9.Byte9Packet.BYTE9_TERMINATOR_BYTE;
+import static ru.aplix.mera.scales.byte9.Byte9Protocol.*;
 import static ru.aplix.mera.scales.byte9.Byte9StatusUpdate.byte9ErrorStatus;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import purejavacomm.*;
+import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.backend.InterruptAction;
 import ru.aplix.mera.scales.backend.ScalesRequest;
 
@@ -40,8 +42,12 @@ final class Byte9Session {
 		addPortName(portName, PORT_SERIAL, null);// Prevent occasional opening.
 
 		final CommPortIdentifier portId = getPortIdentifier(portName);
+		final ScalesConfig config = scalesRequest.getConfig();
 
-		this.port = portId.openSerial("Mera scales test", 2000, INIT_PORT_MODE);
+		final String connectionName = config.get(BYTE9_CONNECTION_NAME);
+		final int timeout = config.get(BYTE9_CONNECTION_TIMEOUT).intValue();
+
+		this.port = portId.openSerial(connectionName, timeout, INIT_PORT_MODE);
 	}
 
 	public final long getResponseTime() {
@@ -55,14 +61,10 @@ final class Byte9Session {
 		this.scalesRequest.onInterrupt(listener);
 		this.port.addEventListener(listener);
 		this.port.notifyOnDataAvailable(true);
-		sendPacket(listener, request);
-		if (!listener.waitForResponse(1000L)) {
-			sendPacket(listener, request);
-			if (!listener.waitForResponse(1000L)) {
-				this.scalesRequest.updateStatus(
-						byte9ErrorStatus("No response"));
-				return null;
-			}
+		if (!request(request, listener)) {
+			this.scalesRequest.updateStatus(
+					byte9ErrorStatus("No response"));
+			return null;
 		}
 		if (listener.isInterrupted()) {
 			return null;
@@ -73,16 +75,39 @@ final class Byte9Session {
 		return readResponse(request, listener);
 	}
 
+	private boolean request(
+			Byte9Packet request,
+			ResponseListener listener)
+	throws Exception {
+
+		final ScalesConfig config = this.scalesRequest.getConfig();
+		final long responseTimeout =
+				config.get(BYTE9_RESPONSE_TIMEOUT).longValue();
+		long retriesLeft = config.get(BYTE9_COMMAND_RETRIES).longValue();
+		final long dataDelay = config.get(BYTE9_DATA_DELAY).longValue();
+
+		do {
+			sendPacket(request, listener, dataDelay);
+			if (listener.waitForResponse(responseTimeout)) {
+				return true;
+			}
+			--retriesLeft;
+		} while (retriesLeft >= 0);
+
+		return false;
+	}
+
 	private void sendPacket(
+			Byte9Packet packet,
 			ResponseListener listener,
-			Byte9Packet packet)
+			long dataDelay)
 	throws Exception {
 
 		final byte[] rawData = packet.rawData();
 
 		this.port.setSerialPortParams(ADDRESS_PARAMS);
 		this.port.getOutputStream().write(rawData, 0, 3);
-		if (listener.waitForResponse(200)) {
+		if (listener.waitForResponse(dataDelay)) {
 			return;
 		}
 		this.port.setSerialPortParams(COMMAND_PARAMS);

@@ -1,7 +1,7 @@
 package ru.aplix.mera.scales.byte9;
 
 import static purejavacomm.CommPortIdentifier.getPortIdentifiers;
-import static ru.aplix.mera.scales.byte9.Byte9ScalesProtocol.BYTE9_SCALES_PROTOCOL;
+import static ru.aplix.mera.scales.byte9.Byte9Protocol.BYTE9_PROTOCOL;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -15,7 +15,7 @@ public class Byte9BackendFactory implements ScalesBackendFactory {
 
 	@Override
 	public ScalesProtocol getScalesProtocol() {
-		return BYTE9_SCALES_PROTOCOL;
+		return BYTE9_PROTOCOL;
 	}
 
 	@Override
