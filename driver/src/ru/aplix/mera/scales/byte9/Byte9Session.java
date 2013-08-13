@@ -70,7 +70,7 @@ final class Byte9Session {
 
 		this.responseTime = listener.responseTime;
 
-		return readResponse(request);
+		return readResponse(request, listener);
 	}
 
 	private void sendPacket(
@@ -89,9 +89,17 @@ final class Byte9Session {
 		this.port.getOutputStream().write(rawData, 3, rawData.length);
 	}
 
-	private Byte9Packet readResponse(Byte9Packet request) throws IOException {
+	private Byte9Packet readResponse(
+			Byte9Packet request,
+			ResponseListener listener)
+	throws IOException {
 
-		final byte[] responseData = readResponseData();
+		final byte[] responseData = readResponseData(listener);
+
+		if (responseData == null) {
+			return null;
+		}
+
 		final Byte9Packet response = new Byte9Packet(responseData);
 
 		if (!validateResponse(request, response)) {
@@ -102,13 +110,18 @@ final class Byte9Session {
 	}
 
 	@SuppressWarnings("resource")
-	private byte[] readResponseData() throws IOException {
+	private byte[] readResponseData(
+			ResponseListener listener)
+	throws IOException {
 
 		final InputStream in = this.port.getInputStream();
 		final byte[] response = new byte[9];
 		int responseLen = 0;
 
 		for (;;) {
+			if (listener.isInterrupted()) {
+				return null;
+			}
 
 			final int read = in.read();
 
@@ -120,7 +133,9 @@ final class Byte9Session {
 				break;
 			}
 		}
-
+		if (listener.isInterrupted()) {
+			return null;
+		}
 		if (responseLen == response.length) {
 			return response;
 		}
@@ -159,7 +174,7 @@ final class Byte9Session {
 			implements SerialPortEventListener, InterruptAction {
 
 		private long responseTime;
-		private boolean interrupted;
+		private volatile boolean interrupted;
 		private boolean hasResponse;
 
 		@Override
