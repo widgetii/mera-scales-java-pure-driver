@@ -30,12 +30,14 @@ public class TesterContent extends JPanel {
 		scrollPane.setPreferredSize(new Dimension(800, 600));
 		add(scrollPane, BorderLayout.CENTER);
 		add(this.statusBar, BorderLayout.SOUTH);
-
-		init();
 	}
 
 	public final TesterApp app() {
 		return this.app;
+	}
+
+	public final TesterToolBar getToolBar() {
+		return this.toolBar;
 	}
 
 	public final TesterLog getLog() {
@@ -46,11 +48,7 @@ public class TesterContent extends JPanel {
 		return this.statusBar;
 	}
 
-	public final TesterToolBar getToolBar() {
-		return this.toolBar;
-	}
-
-	private void init() {
+	final void init() {
 		this.toolBar.init();
 	}
 

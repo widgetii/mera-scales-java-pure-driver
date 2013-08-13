@@ -128,6 +128,23 @@ public final class PortOption
 		return this.portId.toString();
 	}
 
+	void updateConfig(ScalesConfig config) {
+
+		final ScalesPortId portId = getPortId();
+
+		if (portId == null) {
+			return;
+		}
+
+		final ScalesPort port = portId.getPort();
+		final ScalesConfig oldConfig = port.getConfig();
+		final ScalesConfig newConfig = oldConfig.update(config);
+
+		if (newConfig != oldConfig) {
+			port.setConfig(newConfig);
+		}
+	}
+
 	private static final class ScalesErrorListener
 			implements MeraConsumer<ScalesErrorHandle, ScalesErrorMessage> {
 

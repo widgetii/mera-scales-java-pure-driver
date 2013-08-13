@@ -23,9 +23,9 @@ public class TesterStatusBar
 
 	public TesterStatusBar(TesterContent content) {
 		this.app = content.app();
-		setFloatable(false);
 		this.status = new JLabel(NOT_CONNECTED);
 		this.device = new JLabel("");
+		setFloatable(false);
 		add(this.status);
 		addSeparator();
 		add(this.device);

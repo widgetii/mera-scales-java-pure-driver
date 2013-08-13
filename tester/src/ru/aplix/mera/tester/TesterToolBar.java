@@ -3,9 +3,11 @@ package ru.aplix.mera.tester;
 import static java.awt.ComponentOrientation.RIGHT_TO_LEFT;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 
-import javax.swing.JLabel;
-import javax.swing.JToolBar;
+import javax.swing.*;
+
+import ru.aplix.mera.tester.config.ConfigDialog;
 
 
 public class TesterToolBar extends JToolBar {
@@ -20,6 +22,13 @@ public class TesterToolBar extends JToolBar {
 		this.app = content.app();
 		this.portSelector = new ScalesPortSelector(content.app());
 		this.weight = new JLabel();
+		add(new JButton(new AbstractAction("Настройка") {
+			private static final long serialVersionUID = -2109894963363186357L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ConfigDialog(app()).setVisible(true);
+			}
+		}));
 		add(this.portSelector);
 		add(new WeighingButton(this));
 		this.weight.setComponentOrientation(RIGHT_TO_LEFT);

@@ -24,10 +24,15 @@ public class TesterApp implements Runnable {
 	}
 
 	private final ScalesService scalesService = newScalesService();
-	private TesterContent content;
+	private final JFrame frame = new JFrame("Тестирование весов \"Мера\"");
+	private final TesterContent content = new TesterContent(this);
 
 	public final ScalesService getScalesService() {
 		return this.scalesService;
+	}
+
+	public final JFrame getFrame() {
+		return this.frame;
 	}
 
 	public final TesterContent getContent() {
@@ -36,11 +41,8 @@ public class TesterApp implements Runnable {
 
 	@Override
 	public void run() {
-
-		final JFrame frame = new JFrame("Тестирование весов \"Мера\"");
-
-		frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
+		this.frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
 				release();
@@ -48,11 +50,10 @@ public class TesterApp implements Runnable {
 			}
 		});
 
-		this.content = new TesterContent(this);
-
-		frame.setContentPane(this.content);
-		frame.pack();
-		frame.setVisible(true);
+		this.frame.setContentPane(this.content);
+		this.content.init();
+		this.frame.pack();
+		this.frame.setVisible(true);
 	}
 
 	public void perform(Runnable action) {
