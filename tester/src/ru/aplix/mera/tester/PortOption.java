@@ -79,8 +79,8 @@ public final class PortOption
 			return 1;
 		}
 
-		final String proto1 = pid1.getProtocol().getProtocolName();
-		final String proto2 = pid2.getProtocol().getProtocolName();
+		final String proto1 = pid1.getProtocol().getProtocolId();
+		final String proto2 = pid2.getProtocol().getProtocolId();
 		final int protoCmp = proto1.compareTo(proto2);
 
 		if (protoCmp != 0) {

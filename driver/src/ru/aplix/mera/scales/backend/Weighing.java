@@ -1,12 +1,14 @@
 package ru.aplix.mera.scales.backend;
 
+import ru.aplix.mera.scales.ScalesConfig;
+
 
 /**
  * The weighing process interface.
  *
  * <p>A {@link ScalesDriver scales driver} normally returns the weight
  * when {@link ScalesDriver#requestWeight(ScalesRequest) requested}. The backend
- * {@link ScalesBackendConfig#getWeighingPeriod() periodically} requests the
+ * {@link ScalesConfig#getWeighingPeriod() periodically} requests the
  * driver.</p>
  *
  * <p>Alternatively, the driver can automatically report the measured weight.

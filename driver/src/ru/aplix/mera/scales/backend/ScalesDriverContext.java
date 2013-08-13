@@ -1,6 +1,7 @@
 package ru.aplix.mera.scales.backend;
 
-import static ru.aplix.mera.scales.backend.ScalesBackendConfig.DEFAULT_SCALES_BACKEND_CONFIG;
+import static ru.aplix.mera.scales.ScalesConfig.DEFAULT_SCALES_CONFIG;
+import ru.aplix.mera.scales.ScalesConfig;
 
 
 /**
@@ -13,7 +14,7 @@ import static ru.aplix.mera.scales.backend.ScalesBackendConfig.DEFAULT_SCALES_BA
 public class ScalesDriverContext {
 
 	private final ScalesBackend backend;
-	private ScalesBackendConfig config = DEFAULT_SCALES_BACKEND_CONFIG;
+	private ScalesConfig config = DEFAULT_SCALES_CONFIG;
 	private Weighing weighing;
 	private volatile boolean initialized;
 
@@ -25,11 +26,11 @@ public class ScalesDriverContext {
 	 * Scales backend configuration.
 	 *
 	 * @return the configuration set with
-	 * {@link #setConfig(ScalesBackendConfig)} method, or the
-	 * {@link ScalesBackendConfig#DEFAULT_SCALES_BACKEND_CONFIG default one}
+	 * {@link #setConfig(ScalesConfig)} method, or the
+	 * {@link ScalesConfig#DEFAULT_SCALES_CONFIG default one}
 	 * if it wasn't set yet.
 	 */
-	public final ScalesBackendConfig getConfig() {
+	public final ScalesConfig getConfig() {
 		return this.config;
 	}
 
@@ -37,12 +38,12 @@ public class ScalesDriverContext {
 	 * Updates the scales backend configuration.
 	 *
 	 * @param config new backend configuration, or <code>null</code> to set it
-	 * to the {@link ScalesBackendConfig#DEFAULT_SCALES_BACKEND_CONFIG default}
+	 * to the {@link ScalesConfig#DEFAULT_SCALES_CONFIG default}
 	 * one.
 	 */
-	public final void setConfig(ScalesBackendConfig config) {
+	public final void setConfig(ScalesConfig config) {
 		ensureNotInitialized();
-		this.config = config != null ? config : DEFAULT_SCALES_BACKEND_CONFIG;
+		this.config = config != null ? config : DEFAULT_SCALES_CONFIG;
 	}
 
 	/**

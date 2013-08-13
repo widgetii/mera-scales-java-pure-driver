@@ -7,6 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
+import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.ScalesErrorHandle;
 import ru.aplix.mera.scales.ScalesErrorMessage;
 
@@ -18,7 +19,7 @@ public class ScalesBackend
 		extends MeraService<ScalesBackendHandle, ScalesStatusUpdate> {
 
 	private final ScalesDriver driver;
-	private final ScalesBackendConfig config;
+	private final ScalesConfig config;
 	private final ErrorSubscriptions errorSubscriptions =
 			new ErrorSubscriptions();
 	private final WeightSubscription weightSubscription =
@@ -38,7 +39,7 @@ public class ScalesBackend
 		this.weighing = context.getWeighting();
 	}
 
-	public final ScalesBackendConfig config() {
+	public final ScalesConfig config() {
 		return this.config;
 	}
 

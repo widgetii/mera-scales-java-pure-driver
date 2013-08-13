@@ -62,7 +62,7 @@ public final class ScalesPortId {
 		if (this.protocol == null) {
 			return super.toString();
 		}
-		return this.portId + " (" + this.protocol.getProtocolName() + ')';
+		return this.portId + " (" + this.protocol.getProtocolId() + ')';
 	}
 
 }

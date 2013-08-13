@@ -1,5 +1,7 @@
 package ru.aplix.mera.scales;
 
+import java.util.Objects;
+
 import ru.aplix.mera.scales.backend.ScalesBackend;
 
 
@@ -8,24 +10,25 @@ import ru.aplix.mera.scales.backend.ScalesBackend;
  */
 public abstract class ScalesProtocol {
 
-	private final String protocolName;
+	private final String protocolId;
 
 	/**
 	 * Constructs new scales protocol implementation.
 	 *
-	 * @param protocolName human-readable protocol name.
+	 * @param protocolId protocol identifier, can not be <code>null</code>.
 	 */
-	public ScalesProtocol(String protocolName) {
-		this.protocolName = protocolName;
+	public ScalesProtocol(String protocolId) {
+		Objects.requireNonNull(protocolId, "Protocol identifier not specified");
+		this.protocolId = protocolId;
 	}
 
 	/**
-	 * Scales protocol name.
+	 * Scales protocol identifier.
 	 *
-	 * @return human-readable protocol name passed to constructor.
+	 * @return protocol identifier passed to the constructor.
 	 */
-	public final String getProtocolName() {
-		return this.protocolName;
+	public final String getProtocolId() {
+		return this.protocolId;
 	}
 
 	/**
