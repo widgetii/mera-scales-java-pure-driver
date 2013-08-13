@@ -65,11 +65,11 @@ public class ScalesPort
 	/**
 	 * Overrides scales configuration.
 	 *
-	 * <p>This method call causes the port and its backend to restart if
-	 * already running.</p>
+	 * <p>This method call causes the backend to restart if it is already
+	 * running.</p>
 	 *
 	 * @param config new scales configuration, or <code>null</code> to reset it
-	 * to the default one.
+	 * to driver's default one.
 	 */
 	public final void setConfig(ScalesConfig config) {
 
@@ -77,13 +77,8 @@ public class ScalesPort
 
 		lock.lock();
 		try {
-			if (!backendHandle().isSubscribed()) {
-				backend().setConfig(config);
-			} else {
-				stopService();
-				backend().setConfig(config);
-				startService();
-			}
+			this.status = null;
+			backend().setConfig(config);
 		} finally {
 			lock.unlock();
 		}

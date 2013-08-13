@@ -68,7 +68,7 @@ public class ScalesBackend
 	 * running.</p>
 	 *
 	 * @param config new scales configuration, or <code>null</code> to reset it
-	 * to the default one.
+	 * to driver's default one.
 	 */
 	public void setConfig(ScalesConfig config) {
 
