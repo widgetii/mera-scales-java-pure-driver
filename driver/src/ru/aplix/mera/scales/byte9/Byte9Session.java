@@ -111,7 +111,7 @@ final class Byte9Session {
 			return;
 		}
 		this.port.setSerialPortParams(COMMAND_PARAMS);
-		this.port.getOutputStream().write(rawData, 3, rawData.length);
+		this.port.getOutputStream().write(rawData, 3, rawData.length - 3);
 	}
 
 	private Byte9Packet readResponse(
