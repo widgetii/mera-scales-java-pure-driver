@@ -21,32 +21,33 @@ public class Byte9Driver implements ScalesDriver {
 	public ScalesStatusUpdate requestStatus(
 			ScalesRequest request)
 	throws Exception {
+		try (Byte9Session session = new Byte9Session(request, this.portName)) {
 
-		final Byte9Packet response =
-				new Byte9Session(request, this.portName)
-				.send(byte9DeviceIdRequest());
+			final Byte9Packet response = session .send(byte9DeviceIdRequest());
 
-		if (response == null) {
-			return null;
+			if (response == null) {
+				return null;
+			}
+
+			return byte9Status(this.portName, response);
 		}
-
-		return byte9Status(this.portName, response);
 	}
 
 	@Override
 	public WeightUpdate requestWeight(
 			ScalesRequest request)
 	throws Exception {
+		try (Byte9Session session = new Byte9Session(request, this.portName)) {
 
-		final Byte9Session session = new Byte9Session(request, this.portName);
-		final Byte9Packet response =
-				session.send(Byte9Packet.byte9WeightRequest());
+			final Byte9Packet response =
+					session.send(Byte9Packet.byte9WeightRequest());
 
-		if (response == null) {
-			return null;
+			if (response == null) {
+				return null;
+
+			}
+			return new Byte9WeightUpdate(session.getResponseTime(), response);
 		}
-
-		return new Byte9WeightUpdate(session.getResponseTime(), response);
 	}
 
 }

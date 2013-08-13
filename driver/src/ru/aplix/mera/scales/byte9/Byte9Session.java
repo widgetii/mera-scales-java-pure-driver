@@ -20,7 +20,7 @@ import ru.aplix.mera.scales.backend.InterruptAction;
 import ru.aplix.mera.scales.backend.ScalesRequest;
 
 
-final class Byte9Session {
+final class Byte9Session implements AutoCloseable {
 
 	private static final SerialPortMode INIT_PORT_MODE =
 			DEFAULT_SERIAL_PORT_MODE.setBaudRate(14400)
@@ -73,6 +73,13 @@ final class Byte9Session {
 		this.responseTime = listener.responseTime;
 
 		return readResponse(request, listener);
+	}
+
+	@Override
+	public void close() throws Exception {
+		if (this.port != null) {
+			this.port.close();
+		}
 	}
 
 	private boolean request(
