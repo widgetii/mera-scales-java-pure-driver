@@ -16,15 +16,15 @@ public class Byte9Device implements ScalesDevice {
 	public Byte9Device(String deviceId, Byte9Packet packet) {
 		this.deviceId = deviceId;
 		this.packet = packet;
-		if (!hasDevicePacket()) {
+		if (!isDevicePacket()) {
 			this.deviceType = UNKNOWN_DEVICE_TYPE;
 		} else {
 			this.deviceType = byte9DeviceType(this.packet.rawData()[4]);
 		}
 	}
 
-	public final boolean hasDevicePacket() {
-		return this.packet.getCommand() != BYTE9_DEVICE_ID_REQUEST;
+	public final boolean isDevicePacket() {
+		return this.packet.getCommand() == BYTE9_DEVICE_ID_REQUEST;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class Byte9Device implements ScalesDevice {
 		if (!this.deviceType.isUnknown()) {
 			return this.deviceType.id();
 		}
-		if (hasDevicePacket()) {
+		if (isDevicePacket()) {
 			return this.deviceType.id();
 		}
 		return this.deviceType.id() +
@@ -46,7 +46,7 @@ public class Byte9Device implements ScalesDevice {
 
 	@Override
 	public int getMajorRevision() {
-		if (hasDevicePacket()) {
+		if (!isDevicePacket()) {
 			return 0;
 		}
 		return this.packet.rawData()[5] & 0xff;
@@ -54,7 +54,7 @@ public class Byte9Device implements ScalesDevice {
 
 	@Override
 	public int getMinorRevision() {
-		if (hasDevicePacket()) {
+		if (!isDevicePacket()) {
 			return 0;
 		}
 		return this.packet.rawData()[6] & 0xff;
