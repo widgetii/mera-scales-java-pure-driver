@@ -83,7 +83,7 @@ public final class CRC8 {
 	}
 
 	public static byte updateCRC8(byte crc, byte value) {
-		return (byte) ((value & (byte) 0xff) ^ CRC_TABLE[crc & (byte) 0xff]);
+		return (byte) ((value & 0xff) ^ CRC_TABLE[crc & 0xff]);
 	}
 
 	public static byte updateCRC8(byte crc, byte[] values) {
