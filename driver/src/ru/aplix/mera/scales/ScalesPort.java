@@ -1,11 +1,15 @@
 package ru.aplix.mera.scales;
 
 import static java.util.Objects.requireNonNull;
+
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
 import ru.aplix.mera.scales.backend.ScalesBackend;
 import ru.aplix.mera.scales.backend.ScalesBackendHandle;
+import ru.aplix.mera.scales.backend.ScalesDriverContext;
 
 
 /**
@@ -36,6 +40,53 @@ public class ScalesPort
 	ScalesPort(ScalesBackend backend) {
 		requireNonNull(backend, "Scales backend not specified");
 		this.backend = backend;
+	}
+
+	/**
+	 * Default scales configuration.
+	 *
+	 * @return configuration {@link ScalesDriverContext#setConfig(ScalesConfig)
+	 * set} by the driver.
+	 */
+	public final ScalesConfig getDefaultConfig() {
+		return backend().getConfig();
+	}
+
+	/**
+	 * Scales configuration.
+	 *
+	 * @return scales configuration set by driver, or overridden with
+	 * {@link #setConfig(ScalesConfig)} method.
+	 */
+	public final ScalesConfig getConfig() {
+		return backend().getConfig();
+	}
+
+	/**
+	 * Overrides scales configuration.
+	 *
+	 * <p>This method call causes the port and its backend to restart if
+	 * already running.</p>
+	 *
+	 * @param config new scales configuration, or <code>null</code> to reset it
+	 * to the default one.
+	 */
+	public final void setConfig(ScalesConfig config) {
+
+		final WriteLock lock = serviceSubscriptions().lock().writeLock();
+
+		lock.lock();
+		try {
+			if (!backendHandle().isSubscribed()) {
+				backend().setConfig(config);
+			} else {
+				stopService();
+				backend().setConfig(config);
+				startService();
+			}
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override

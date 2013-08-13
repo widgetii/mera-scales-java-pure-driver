@@ -3,6 +3,7 @@ package ru.aplix.mera.scales.backend;
 import static java.util.concurrent.Executors.newSingleThreadScheduledExecutor;
 
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
@@ -19,7 +20,8 @@ public class ScalesBackend
 		extends MeraService<ScalesBackendHandle, ScalesStatusUpdate> {
 
 	private final ScalesDriver driver;
-	private final ScalesConfig config;
+	private final ScalesConfig defaultConfig;
+	private ScalesConfig config;
 	private final ErrorSubscriptions errorSubscriptions =
 			new ErrorSubscriptions();
 	private final WeightSubscription weightSubscription =
@@ -35,12 +37,53 @@ public class ScalesBackend
 
 		context.initDriver(driver);
 
-		this.config = context.getConfig();
+		this.config = this.defaultConfig = context.getConfig();
 		this.weighing = context.getWeighting();
 	}
 
-	public final ScalesConfig config() {
+	/**
+	 * Default scales configuration.
+	 *
+	 * @return configuration {@link ScalesDriverContext#setConfig(ScalesConfig)
+	 * set} by the driver.
+	 */
+	public final ScalesConfig getDefaultConfig() {
+		return this.defaultConfig;
+	}
+
+	/**
+	 * Scales configuration.
+	 *
+	 * @return scales configuration set by driver, or overridden with
+	 * {@link #setConfig(ScalesConfig)} method.
+	 */
+	public final ScalesConfig getConfig() {
 		return this.config;
+	}
+
+	/**
+	 * Overrides scales configuration.
+	 *
+	 * <p>This method call causes the backend to restart if it is already
+	 * running.</p>
+	 *
+	 * @param config new scales configuration, or <code>null</code> to reset it
+	 * to the default one.
+	 */
+	public void setConfig(ScalesConfig config) {
+
+		final WriteLock lock = serviceSubscriptions().lock().writeLock();
+
+		lock.lock();
+		try {
+			this.config = config != null ? config : getDefaultConfig();
+			if (this.executor != null) {
+				stopService();
+				startService();
+			}
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	protected final ScalesDriver driver() {
@@ -107,7 +150,7 @@ public class ScalesBackend
 		this.weighing.suspendWeighing();
 		new StatusRequestTask(this).schedule(
 				0,
-				config().getMinReconnectDelay());
+				getConfig().getMinReconnectDelay());
 	}
 
 	void onInterrupt(InterruptAction interruptAction) {

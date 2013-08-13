@@ -71,7 +71,7 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 		this.future = this.backend.executor().scheduleAtFixedRate(
 				this,
 				0,
-				this.backend.config().getWeighingPeriod(),
+				this.backend.getConfig().getWeighingPeriod(),
 				TimeUnit.MILLISECONDS);
 	}
 

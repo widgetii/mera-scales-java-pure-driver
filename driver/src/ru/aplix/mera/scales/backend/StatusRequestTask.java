@@ -42,7 +42,7 @@ final class StatusRequestTask implements Runnable {
 
 		final long newPeriod = Math.min(
 				this.period * 2,
-				this.backend.config().getMaxReconnectDelay());
+				this.backend.getConfig().getMaxReconnectDelay());
 		final long nextStart = start + this.period;
 		final long delay = nextStart - System.currentTimeMillis();
 

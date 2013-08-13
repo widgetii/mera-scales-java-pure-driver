@@ -23,27 +23,30 @@ public class ScalesDriverContext {
 	}
 
 	/**
-	 * Scales backend configuration.
+	 * Scales configuration.
 	 *
 	 * @return the configuration set with
 	 * {@link #setConfig(ScalesConfig)} method, or the
-	 * {@link ScalesConfig#DEFAULT_SCALES_CONFIG default one}
-	 * if it wasn't set yet.
+	 * {@link ScalesConfig#DEFAULT_SCALES_CONFIG default one} if it didn't set
+	 * yet.
 	 */
 	public final ScalesConfig getConfig() {
 		return this.config;
 	}
 
 	/**
-	 * Updates the scales backend configuration.
+	 * Updates the scales configuration.
 	 *
-	 * @param config new backend configuration, or <code>null</code> to set it
+	 * @param config new configuration, or <code>null</code> to set it
 	 * to the {@link ScalesConfig#DEFAULT_SCALES_CONFIG default}
 	 * one.
 	 */
 	public final void setConfig(ScalesConfig config) {
-		ensureNotInitialized();
-		this.config = config != null ? config : DEFAULT_SCALES_CONFIG;
+		if (!this.initialized) {
+			this.config = config != null ? config : DEFAULT_SCALES_CONFIG;
+		} else {
+			this.backend.setConfig(config);
+		}
 	}
 
 	/**

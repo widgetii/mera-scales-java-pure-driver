@@ -85,6 +85,16 @@ public abstract class MeraSubscriptions<H extends MeraHandle<H, M>, M> {
 	}
 
 	/**
+	 * Subscriptions lock.
+	 *
+	 * @return reentrant read-write lock acquired during subscribe/unsubscribe
+	 * operations and message sending.
+	 */
+	public final ReentrantReadWriteLock lock() {
+		return this.lock;
+	}
+
+	/**
 	 * Creates a subscription handle for the given consumer.
 	 *
 	 * @param consumer consumer to subscribe.
