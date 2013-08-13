@@ -122,4 +122,21 @@ public abstract class ScalesOption<T> {
 	 */
 	public abstract T correctValue(T value);
 
+	final T normalizeValue(T value) {
+		if (value == null) {
+			return null;
+		}
+
+		final T corrected = correctValue(value);
+
+		if (corrected == null) {
+			return null;
+		}
+		if (corrected.equals(getDefaultValue())) {
+			return null;
+		}
+
+		return corrected;
+	}
+
 }

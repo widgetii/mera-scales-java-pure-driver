@@ -1,7 +1,6 @@
 package ru.aplix.mera.scales;
 
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 import ru.aplix.mera.scales.backend.*;
 
@@ -12,7 +11,8 @@ import ru.aplix.mera.scales.backend.*;
  * <p>This class is immutable. When a setter called a new instance created
  * with the target option changed.</p>
  */
-public final class ScalesConfig implements Cloneable {
+public final class ScalesConfig
+		implements Iterable<ScalesOption<?>>, Cloneable {
 
 	/**
 	 * Default scales configuration.
@@ -60,6 +60,16 @@ public final class ScalesConfig implements Cloneable {
 	private HashMap<ScalesOption<?>, Object> optionValues = new HashMap<>();
 
 	private ScalesConfig() {
+	}
+
+	/**
+	 * Whether this configuration is the default one.
+	 *
+	 * @return <code>true</code> if no option values changed in this
+	 * configuration, or <code>false</code> otherwise.
+	 */
+	public final boolean isDefault() {
+		return this.optionValues.isEmpty();
 	}
 
 	/**
@@ -166,7 +176,7 @@ public final class ScalesConfig implements Cloneable {
 	public final <T> ScalesConfig set(ScalesOption<T> option, T value) {
 		Objects.requireNonNull(option, "Option not specified");
 
-		final T val = value != null ? option.correctValue(value) : null;
+		final T val = option.normalizeValue(value);
 		final Object old = this.optionValues.get(option);
 
 		if (Objects.equals(old, val)) {
@@ -182,6 +192,54 @@ public final class ScalesConfig implements Cloneable {
 		}
 
 		return clone;
+	}
+
+	/**
+	 * Updates the configuration with options set in another one, leaving other
+	 * options untouched.
+	 *
+	 * @param update configuration update.
+	 *
+	 * @return update configuration.
+	 */
+	public final ScalesConfig update(ScalesConfig update) {
+		if (update.isDefault()) {
+			return this;
+		}
+
+		ScalesConfig result = null;
+
+		for (Map.Entry<ScalesOption<?>, Object> e
+				: update.optionValues.entrySet()) {
+
+			final ScalesOption<?> option = e.getKey();
+			final Object newValue = e.getValue();
+			final Object oldValue = this.optionValues.get(option);
+
+			if (Objects.equals(oldValue, newValue)) {
+				continue;
+			}
+			if (result == null) {
+				result = clone();
+			}
+			result.optionValues.put(option, newValue);
+		}
+
+		if (result != null) {
+			return result;
+		}
+
+		return this;
+	}
+
+	/**
+	 * Iterates over option values.
+	 *
+	 * @return iterator over all options changed in this configuration.
+	 */
+	@Override
+	public Iterator<ScalesOption<?>> iterator() {
+		return this.optionValues.keySet().iterator();
 	}
 
 	@SuppressWarnings("unchecked")
