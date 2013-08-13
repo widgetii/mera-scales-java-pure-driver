@@ -40,4 +40,9 @@ public class IntegerScalesOption extends ScalesOption<Long> {
 		return this.defaultValue;
 	}
 
+	@Override
+	public Long correctValue(Long value) {
+		return value;
+	}
+
 }

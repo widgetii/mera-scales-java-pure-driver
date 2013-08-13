@@ -109,4 +109,17 @@ public abstract class ScalesOption<T> {
 	 */
 	public abstract T getDefaultValue();
 
+	/**
+	 * Corrects the option value.
+	 *
+	 * <p>This method is called before the new option value is set. It can be
+	 * used to correct the value provided by client.</p>
+	 *
+	 * @param value new option value provided by client.
+	 *
+	 * @return corrected value to apply to configuration, or <code>null</code>
+	 * to apply the default one.
+	 */
+	public abstract T correctValue(T value);
+
 }

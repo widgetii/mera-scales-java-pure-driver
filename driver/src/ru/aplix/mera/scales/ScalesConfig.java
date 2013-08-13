@@ -17,8 +17,7 @@ public final class ScalesConfig implements Cloneable {
 	/**
 	 * Default scales configuration.
 	 */
-	public static final ScalesConfig DEFAULT_SCALES_CONFIG =
-			new ScalesConfig();
+	public static final ScalesConfig DEFAULT_SCALES_CONFIG = new ScalesConfig();
 
 	/**
 	 * The minimum delay in milliseconds between attempts to reconnect to the
@@ -32,8 +31,8 @@ public final class ScalesConfig implements Cloneable {
 	 * the backend continues reconnection attempts with this delay between
 	 * them.</p>
 	 */
-	public static final ScalesOption<Long> MIN_RECONNECT_DELAY =
-			new IntegerScalesOption("minReconnectDelay", 1000);
+	public static final NaturalScalesOption MIN_RECONNECT_DELAY =
+			new NaturalScalesOption("minReconnectDelay", 1000);
 
 	/**
 	 * The maximum delay in milliseconds between attempts to reconnect to the
@@ -41,8 +40,8 @@ public final class ScalesConfig implements Cloneable {
 	 *
 	 * @see #MIN_RECONNECT_DELAY
 	 */
-	public static final ScalesOption<Long> MAX_RECONNECT_DELAY =
-			new IntegerScalesOption("maxReconnectDelay", 5000);
+	public static final NaturalScalesOption MAX_RECONNECT_DELAY =
+			new NaturalScalesOption("maxReconnectDelay", 5000);
 
 	/**
 	 * The period in milliseconds of weight measurements.
@@ -55,8 +54,8 @@ public final class ScalesConfig implements Cloneable {
 	 * {@link ScalesDriverContext#updateWeightWith(Weighing) reported
 	 * automatically}.</p>
 	 */
-	public static final ScalesOption<Long> WEIGHING_PERIOD =
-			new IntegerScalesOption("minReconnectDelay", 2000);
+	public static final NaturalScalesOption WEIGHING_PERIOD =
+			new NaturalScalesOption("weighingPeriod", 2000);
 
 	private HashMap<ScalesOption<?>, Object> optionValues = new HashMap<>();
 
@@ -167,16 +166,17 @@ public final class ScalesConfig implements Cloneable {
 	public final <T> ScalesConfig set(ScalesOption<T> option, T value) {
 		Objects.requireNonNull(option, "Option not specified");
 
+		final T val = value != null ? option.correctValue(value) : null;
 		final Object old = this.optionValues.get(option);
 
-		if (Objects.equals(old, value)) {
+		if (Objects.equals(old, val)) {
 			return this;
 		}
 
 		final ScalesConfig clone = clone();
 
-		if (value != null) {
-			clone.optionValues.put(option, value);
+		if (val != null) {
+			clone.optionValues.put(option, val);
 		} else {
 			clone.optionValues.remove(option);
 		}
