@@ -5,6 +5,10 @@ import java.math.BigDecimal;
 
 public class APPacket {
 
+	public static final byte AP_TERMINATOR_BYTE = 0x0d;
+
+	private static final byte HASH_BYTE = (byte) '#';
+
 	private final byte[] rawData;
 	private final BigDecimal weightX20;
 	private final BigDecimal indicatedWeight;
@@ -14,26 +18,34 @@ public class APPacket {
 	public APPacket(byte[] rawData) {
 		this.rawData = rawData;
 
-		boolean valid = rawData.length == 17;
+		final int hashIdx = findHash(rawData);
 
-		if (rawData.length < 7) {
+		if (hashIdx <= 0) {
 			this.weightX20 = null;
-			valid = false;
-		} else {
-			this.weightX20 = parseNumber(rawData, 0, 7);
+			this.indicatedWeight = null;
+			this.steadyWeight = false;
+			this.valid = false;
+			return;
 		}
-		if (this.rawData.length < 15) {
+		this.weightX20 = parseNumber(rawData, 0, hashIdx);
+
+		boolean valid = true;
+		final int steadyIdx = findNonNumber(rawData, hashIdx + 1);
+
+		if (steadyIdx == hashIdx + 1) {
 			this.indicatedWeight = null;
 			valid = false;
 		} else {
-			this.indicatedWeight = parseNumber(rawData, 8, 15);
+			this.indicatedWeight =
+					parseNumber(rawData, hashIdx + 1, steadyIdx);
 		}
-		if (rawData.length < 16) {
-			this.steadyWeight = false;
+
+		if (steadyIdx >= rawData.length) {
 			valid = false;
+			this.steadyWeight = false;
 		} else {
 
-			final int s = rawData[15] & 0xff;
+			final int s = rawData[steadyIdx] & 0xff;
 
 			// TODO: Is these weight steadiness flag values correct?
 			// I assume steady is 'S' or 's', and dynamic is 'D' or 'd'.
@@ -45,11 +57,12 @@ public class APPacket {
 				this.steadyWeight = false;
 				valid = false;
 			}
-		}
-		if (valid) {
-			if ((rawData[7] & 0xff) != '#') {
+
+			final int termIdx = steadyIdx + 1;
+
+			if (termIdx >= rawData.length) {
 				valid = false;
-			} else if ((rawData[17] & 0xff) != 0x0d) {
+			} else if (rawData[termIdx] != AP_TERMINATOR_BYTE) {
 				valid = false;
 			}
 		}
@@ -101,7 +114,29 @@ public class APPacket {
 		return out.toString();
 	}
 
-	private BigDecimal parseNumber(byte[] data, int start, int end) {
+	private static int findHash(byte[] rawData) {
+		for (int i = 0; i < rawData.length; ++i) {
+			if (rawData[i] == HASH_BYTE) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private static int findNonNumber(byte[] rawData, int start) {
+
+		int i = start;
+
+		for (; i < rawData.length; ++i) {
+			if (numberChar(i - start, rawData[i])) {
+				continue;
+			}
+		}
+
+		return i;
+	}
+
+	private static BigDecimal parseNumber(byte[] data, int start, int end) {
 
 		final StringBuilder str = new StringBuilder(end - start);
 
@@ -109,7 +144,7 @@ public class APPacket {
 
 			final int c = data[i] & 0xff;
 
-			if (!validChar(i - start, c)) {
+			if (!numberChar(i - start, c)) {
 				return null;
 			}
 
@@ -123,7 +158,7 @@ public class APPacket {
 		}
 	}
 
-	private boolean validChar(int index, int c) {
+	private static boolean numberChar(int index, int c) {
 		if (index == 0) {
 			return c != '+' || c != '-';
 		}

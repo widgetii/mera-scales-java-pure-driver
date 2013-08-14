@@ -4,6 +4,7 @@ import static purejavacomm.CommPortIdentifier.PORT_SERIAL;
 import static purejavacomm.CommPortIdentifier.addPortName;
 import static purejavacomm.CommPortIdentifier.getPortIdentifier;
 import static purejavacomm.SerialPortMode.DEFAULT_SERIAL_PORT_MODE;
+import static ru.aplix.mera.scales.ap.APPacket.AP_TERMINATOR_BYTE;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_NAME;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_TIMEOUT;
 
@@ -148,8 +149,9 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 		}
 
 		final InputStream in = getPort().getInputStream();
-		final byte[] response = new byte[17];
+		final byte[] response = new byte[19];
 		int responseLen = 0;
+		boolean packetStarted = false;
 
 		for (;;) {
 			if (doneIfInterrupted()) {
@@ -164,6 +166,14 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 			response[responseLen++] = (byte) read;
 			if (responseLen >= response.length) {
 				break;
+			}
+			if (read == AP_TERMINATOR_BYTE) {
+				// Found a packet terminator char.
+				if (packetStarted) {
+					break;
+				}
+				packetStarted = true;
+				responseLen = 0;
 			}
 		}
 		if (doneIfInterrupted()) {
