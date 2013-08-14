@@ -10,6 +10,7 @@ public class APDriver implements ScalesDriver, Weighing {
 	private final APDevice device;
 	private WeightReceiver weightReceiver;
 	private APPortListener weightListener;
+	private boolean weighingStarted;
 
 	public APDriver(String portId) {
 		this.device = new APDevice(portId);
@@ -68,6 +69,31 @@ public class APDriver implements ScalesDriver, Weighing {
 
 	@Override
 	public synchronized void startWeighing() {
+		this.weighingStarted = true;
+		start();
+	}
+
+	@Override
+	public synchronized void suspendWeighing() {
+		if (this.weighingStarted) {
+			stop();
+		}
+	}
+
+	@Override
+	public synchronized void resumeWeighing() {
+		if (this.weighingStarted) {
+			start();
+		}
+	}
+
+	@Override
+	public synchronized void stopWeighing() {
+		this.weighingStarted = false;
+		stop();
+	}
+
+	private void start() {
 		try {
 			this.weightListener = new APPortListener(this, true);
 		} catch (Throwable e) {
@@ -75,22 +101,9 @@ public class APDriver implements ScalesDriver, Weighing {
 		}
 	}
 
-	@Override
-	public void suspendWeighing() {
-		stopWeighing();
-	}
-
-	@Override
-	public void resumeWeighing() {
-		startWeighing();
-	}
-
-	@Override
-	public synchronized void stopWeighing() {
-		if (this.weightListener != null) {
-			this.weightListener.interrupt();
-			this.weightListener = null;
-		}
+	private void stop() {
+		this.weightListener.interrupt();
+		this.weightListener = null;
 	}
 
 }
