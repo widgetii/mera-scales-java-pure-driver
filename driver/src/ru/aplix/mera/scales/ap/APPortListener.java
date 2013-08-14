@@ -4,7 +4,6 @@ import static purejavacomm.CommPortIdentifier.PORT_SERIAL;
 import static purejavacomm.CommPortIdentifier.addPortName;
 import static purejavacomm.CommPortIdentifier.getPortIdentifier;
 import static purejavacomm.SerialPortMode.DEFAULT_SERIAL_PORT_MODE;
-import static ru.aplix.mera.scales.ap.APErrorMesssage.AP_ERROR_MESSAGE;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_NAME;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_TIMEOUT;
 
@@ -62,7 +61,7 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 		final long weighingTime = System.currentTimeMillis();
 
 		try {
-			responseReceived(respond(weighingTime));
+			responseReceived(!respond(weighingTime));
 		} catch (Throwable e) {
 			this.driver.getWeightReceiver().error(new ThrowableErrorMessage(e));
 		}
@@ -121,7 +120,7 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 			return true;
 		}
 		if (!packet.isValid()) {
-			this.driver.getWeightReceiver().error(AP_ERROR_MESSAGE);
+			this.driver.getWeightReceiver().error(new APErrorMesssage(packet));
 			return false;
 		}
 		if (this.reportWeight) {

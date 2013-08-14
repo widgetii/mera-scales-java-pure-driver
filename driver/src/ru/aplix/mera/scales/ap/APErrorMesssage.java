@@ -5,14 +5,15 @@ import ru.aplix.mera.scales.ScalesErrorMessage;
 
 final class APErrorMesssage implements ScalesErrorMessage {
 
-	static final APErrorMesssage AP_ERROR_MESSAGE = new APErrorMesssage();
+	private final APPacket packet;
 
-	private APErrorMesssage() {
+	APErrorMesssage(APPacket packet) {
+		this.packet = packet;
 	}
 
 	@Override
 	public String getErrorMessage() {
-		return "Invalid data packet received";
+		return "Invalid data packet received: " + this.packet;
 	}
 
 	@Override
