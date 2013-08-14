@@ -165,7 +165,7 @@ public class ScalesPort
 		@Override
 		protected void subscribed(LoadHandle handle) {
 			super.subscribed(handle);
-			if (this.load != null && !this.port.weightListener.isSteady()) {
+			if (this.load != null && !this.port.weightListener.weightIsSteady()) {
 				handle.getConsumer().messageReceived(this.load);
 			}
 		}
@@ -211,7 +211,7 @@ public class ScalesPort
 		@Override
 		protected void subscribed(WeightHandle handle) {
 			super.subscribed(handle);
-			if (this.weight != null && this.port.weightListener.isSteady()) {
+			if (this.weight != null && this.port.weightListener.weightIsSteady()) {
 				handle.getConsumer().messageReceived(this.weight);
 			}
 		}

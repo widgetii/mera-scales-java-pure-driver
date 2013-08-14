@@ -1,5 +1,7 @@
 package ru.aplix.mera.scales.config;
 
+import static ru.aplix.mera.scales.config.DefaultWeightSteadinessPolicy.DEFAULT_WEIGHT_STEADINESS_POLICY;
+
 import java.util.*;
 
 import ru.aplix.mera.scales.backend.*;
@@ -56,6 +58,30 @@ public final class ScalesConfig
 	 */
 	public static final NaturalScalesOption WEIGHING_PERIOD =
 			new NaturalScalesOption("weighingPeriod", 2000);
+
+	/**
+	 * Weight steadiness detection policy.
+	 *
+	 * <p>The default policy considers the weight is steady when the three
+	 * subsequent weight updates contain the same weight value, or when the
+	 * time since the last update is out. I also trust the weight updates
+	 * {@link WeightUpdate#isSteadyWeight() steadiness}.</p>
+	 */
+	public static final ScalesOption<WeightSteadinessPolicy>
+	WEIGHT_STEADINESS_POLICY =
+			new ScalesOption<WeightSteadinessPolicy>(
+					"weightSteadinessPolicy",
+					WeightSteadinessPolicy.class) {
+				@Override
+				public WeightSteadinessPolicy getDefaultValue() {
+					return DEFAULT_WEIGHT_STEADINESS_POLICY;
+				}
+				@Override
+				public WeightSteadinessPolicy correctValue(
+						WeightSteadinessPolicy value) {
+					return value;
+				}
+			};
 
 	private HashMap<ScalesOption<?>, Object> optionValues = new HashMap<>();
 
@@ -142,6 +168,31 @@ public final class ScalesConfig
 	 */
 	public final ScalesConfig setWeighingPeriod(long weighingPeriod) {
 		return set(WEIGHING_PERIOD, weighingPeriod);
+	}
+
+	/**
+	 * Weight steadiness detection policy.
+	 *
+	 * @return policy.
+	 *
+	 * @see #WEIGHT_STEADINESS_POLICY
+	 */
+	public final WeightSteadinessPolicy getWeightSteadinessPolicy() {
+		return get(WEIGHT_STEADINESS_POLICY);
+	}
+
+	/**
+	 * Changes the weight steadiness detection policy.
+	 *
+	 * @param policy new policy or <code>null</code> to use a default one.
+	 *
+	 * @return updated configuration.
+	 *
+	 * @see #WEIGHT_STEADINESS_POLICY
+	 */
+	public final ScalesConfig setWeightSteadinessPolicy(
+			WeightSteadinessPolicy policy) {
+		return set(WEIGHT_STEADINESS_POLICY, policy);
 	}
 
 	/**

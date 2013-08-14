@@ -20,6 +20,7 @@ public class WeighingTest {
 	private ScalesPortHandle statusHandle;
 	private LoadConsumer loadConsumer;
 	private WeightConsumer weightConsumer;
+	private ErrorConsumer errorConsumer;
 
 	@Before
 	public void start() {
@@ -34,6 +35,9 @@ public class WeighingTest {
 		this.port = portId.getPort();
 		this.statusConsumer = new ScalesStatusConsumer();
 		this.statusHandle = this.port.subscribe(this.statusConsumer);
+
+		this.errorConsumer = new ErrorConsumer();
+		this.statusHandle.listenForErrors(this.errorConsumer);
 
 		// Status required to start weighing.
 		this.driver.sendStatus(this.driver.connectedStatus());
@@ -131,6 +135,7 @@ public class WeighingTest {
 
 	@After
 	public void stop() {
+		this.errorConsumer.noMoreMessages();
 		if (this.driver != null) {
 			this.driver.stop();
 		}
