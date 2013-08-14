@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.scales.*;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 public final class PortOption

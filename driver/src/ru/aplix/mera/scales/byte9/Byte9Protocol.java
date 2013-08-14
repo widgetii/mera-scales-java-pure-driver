@@ -2,6 +2,9 @@ package ru.aplix.mera.scales.byte9;
 
 import ru.aplix.mera.scales.*;
 import ru.aplix.mera.scales.backend.ScalesBackend;
+import ru.aplix.mera.scales.config.NaturalScalesOption;
+import ru.aplix.mera.scales.config.NonNegativeScalesOption;
+import ru.aplix.mera.scales.config.StringScalesOption;
 
 
 /**

@@ -1,12 +1,12 @@
 package ru.aplix.mera.tester.config;
 
-import static ru.aplix.mera.scales.ScalesConfig.MAX_RECONNECT_DELAY;
-import static ru.aplix.mera.scales.ScalesConfig.MIN_RECONNECT_DELAY;
-import static ru.aplix.mera.scales.ScalesConfig.WEIGHING_PERIOD;
+import static ru.aplix.mera.scales.config.ScalesConfig.MAX_RECONNECT_DELAY;
+import static ru.aplix.mera.scales.config.ScalesConfig.MIN_RECONNECT_DELAY;
+import static ru.aplix.mera.scales.config.ScalesConfig.WEIGHING_PERIOD;
 
 import javax.swing.JComboBox;
 
-import ru.aplix.mera.scales.ScalesConfig;
+import ru.aplix.mera.scales.config.ScalesConfig;
 import ru.aplix.mera.tester.TesterApp;
 
 

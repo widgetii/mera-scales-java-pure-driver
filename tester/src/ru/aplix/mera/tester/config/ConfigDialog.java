@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
-import ru.aplix.mera.scales.ScalesConfig;
+import ru.aplix.mera.scales.config.ScalesConfig;
 import ru.aplix.mera.tester.ScalesPortSelector;
 import ru.aplix.mera.tester.TesterApp;
 

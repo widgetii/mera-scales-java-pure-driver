@@ -8,9 +8,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.message.MeraService;
 import ru.aplix.mera.message.MeraSubscriptions;
-import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.ScalesErrorHandle;
 import ru.aplix.mera.scales.ScalesErrorMessage;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 /**

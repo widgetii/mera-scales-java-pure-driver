@@ -1,6 +1,6 @@
 package ru.aplix.mera.scales.backend;
 
-import ru.aplix.mera.scales.ScalesConfig;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 /**

@@ -1,4 +1,6 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.config;
+
+import ru.aplix.mera.scales.ScalesProtocol;
 
 
 /**

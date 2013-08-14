@@ -6,8 +6,8 @@ import java.awt.Insets;
 
 import javax.swing.*;
 
-import ru.aplix.mera.scales.ScalesConfig;
-import ru.aplix.mera.scales.ScalesOption;
+import ru.aplix.mera.scales.config.ScalesConfig;
+import ru.aplix.mera.scales.config.ScalesOption;
 import ru.aplix.mera.tester.TesterApp;
 
 

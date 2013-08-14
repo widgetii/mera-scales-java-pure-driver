@@ -1,6 +1,6 @@
 package ru.aplix.mera.tester;
 
-import static ru.aplix.mera.scales.ScalesConfig.DEFAULT_SCALES_CONFIG;
+import static ru.aplix.mera.scales.config.ScalesConfig.DEFAULT_SCALES_CONFIG;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,8 +10,8 @@ import java.util.TreeSet;
 import javax.swing.JComboBox;
 import javax.swing.event.EventListenerList;
 
-import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.ScalesPortId;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 public class ScalesPortSelector extends JComboBox<PortOption> {

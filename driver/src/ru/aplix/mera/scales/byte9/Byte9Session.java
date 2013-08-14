@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import purejavacomm.*;
-import ru.aplix.mera.scales.ScalesConfig;
 import ru.aplix.mera.scales.backend.InterruptAction;
 import ru.aplix.mera.scales.backend.ScalesRequest;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 final class Byte9Session implements AutoCloseable {

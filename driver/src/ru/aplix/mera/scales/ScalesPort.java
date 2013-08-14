@@ -10,6 +10,7 @@ import ru.aplix.mera.message.MeraSubscriptions;
 import ru.aplix.mera.scales.backend.ScalesBackend;
 import ru.aplix.mera.scales.backend.ScalesBackendHandle;
 import ru.aplix.mera.scales.backend.ScalesDriverContext;
+import ru.aplix.mera.scales.config.ScalesConfig;
 
 
 /**

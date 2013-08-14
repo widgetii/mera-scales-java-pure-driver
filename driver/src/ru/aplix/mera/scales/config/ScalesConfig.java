@@ -1,4 +1,4 @@
-package ru.aplix.mera.scales;
+package ru.aplix.mera.scales.config;
 
 import java.util.*;
 

@@ -4,7 +4,7 @@ import static ru.aplix.mera.scales.byte9.Byte9Protocol.*;
 
 import javax.swing.JComboBox;
 
-import ru.aplix.mera.scales.ScalesConfig;
+import ru.aplix.mera.scales.config.ScalesConfig;
 import ru.aplix.mera.tester.TesterApp;
 
 
