@@ -1,6 +1,7 @@
 package ru.aplix.mera.scales.ap;
 
 import static ru.aplix.mera.scales.ap.APStatusUpdate.AP_DISCONNECTED;
+import ru.aplix.mera.scales.ThrowableErrorMessage;
 import ru.aplix.mera.scales.backend.*;
 
 
@@ -67,7 +68,11 @@ public class APDriver implements ScalesDriver, Weighing {
 
 	@Override
 	public synchronized void startWeighing() {
-		this.weightListener = new APPortListener(this, true);
+		try {
+			this.weightListener = new APPortListener(this, true);
+		} catch (Throwable e) {
+			getWeightReceiver().error(new ThrowableErrorMessage(e));
+		}
 	}
 
 	@Override

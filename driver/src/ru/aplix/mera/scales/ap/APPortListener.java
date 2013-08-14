@@ -29,9 +29,16 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 	private volatile boolean interrupted;
 	private volatile boolean error;
 
-	APPortListener(APDriver driver, boolean reportWeight) {
+	APPortListener(APDriver driver, boolean reportWeight) throws Exception {
 		this.driver = driver;
 		this.reportWeight = reportWeight;
+		this.port = openPort();
+		this.port.addEventListener(this);
+		this.port.notifyOnDataAvailable(true);
+	}
+
+	public final SerialPort getPort() {
+		return this.port;
 	}
 
 	public final boolean isInterrupted() {
@@ -40,13 +47,6 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 
 	public final boolean isError() {
 		return this.error;
-	}
-
-	public final SerialPort getPort() throws Exception {
-		if (this.port != null) {
-			return this.port;
-		}
-		return this.port = openPort();
 	}
 
 	@Override
