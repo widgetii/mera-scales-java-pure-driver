@@ -6,7 +6,6 @@ import static purejavacomm.CommPortIdentifier.getPortIdentifier;
 import static purejavacomm.SerialPort.PARITY_MARK;
 import static purejavacomm.SerialPort.PARITY_SPACE;
 import static purejavacomm.SerialPortMode.DEFAULT_SERIAL_PORT_MODE;
-import static ru.aplix.mera.scales.byte9.Byte9Packet.BYTE9_TERMINATOR_BYTE;
 import static ru.aplix.mera.scales.byte9.Byte9Protocol.*;
 import static ru.aplix.mera.scales.byte9.Byte9StatusUpdate.byte9ErrorStatus;
 
@@ -161,7 +160,7 @@ final class Byte9Session implements AutoCloseable {
 				break;
 			}
 			response[responseLen++] = (byte) read;
-			if (read == BYTE9_TERMINATOR_BYTE) {
+			if (responseLen >= response.length) {
 				break;
 			}
 		}
