@@ -33,7 +33,8 @@ public abstract class MeraServiceHandle<H extends MeraServiceHandle<H, M>, M>
 	 *
 	 * @return the same subscription handle.
 	 */
-	protected final <HH extends MeraHandle<HH, ?>> HH addSubscription(HH handle) {
+	protected synchronized final
+	<HH extends MeraHandle<HH, ?>> HH addSubscription(HH handle) {
 		if (this.handles == null) {
 			this.handles = new MeraHandle<?, ?>[] {handle};
 		} else {
@@ -47,7 +48,7 @@ public abstract class MeraServiceHandle<H extends MeraServiceHandle<H, M>, M>
 		return handle;
 	}
 
-	final void removeHandle(MeraHandle<?, ?> handle) {
+	final synchronized void removeHandle(MeraHandle<?, ?> handle) {
 		if (this.handles == null) {
 			return;
 		}
@@ -78,13 +79,16 @@ public abstract class MeraServiceHandle<H extends MeraServiceHandle<H, M>, M>
 
 	final void unsubscribeAll() {
 
-		final MeraHandle<?, ?>[] handles = this.handles;
+		final MeraHandle<?, ?>[] handles;
 
-		if (handles == null) {
-			return;
+		synchronized (this) {
+			handles = this.handles;
+			if (handles == null) {
+				return;
+			}
+			this.handles = null;
 		}
 
-		this.handles = null;
 		for (MeraHandle<?, ?> handle : handles) {
 			handle.unsubscribe();
 		}
