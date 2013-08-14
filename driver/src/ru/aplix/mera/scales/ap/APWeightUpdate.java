@@ -1,7 +1,7 @@
 package ru.aplix.mera.scales.ap;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
+import java.math.RoundingMode;
 
 import ru.aplix.mera.scales.backend.WeightUpdate;
 
@@ -20,7 +20,7 @@ public class APWeightUpdate implements WeightUpdate {
 		this.weight = packet.getWeightX20()
 				.multiply(THOUSAND)
 				.divide(TWENTY)
-				.round(MathContext.UNLIMITED)
+				.setScale(0, RoundingMode.HALF_UP)
 				.intValueExact();
 		this.steadyWeight = packet.isSteadyWeight();
 	}

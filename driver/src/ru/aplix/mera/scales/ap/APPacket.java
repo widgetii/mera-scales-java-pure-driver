@@ -128,8 +128,8 @@ public class APPacket {
 		int i = start;
 
 		for (; i < rawData.length; ++i) {
-			if (numberChar(i - start, rawData[i])) {
-				continue;
+			if (!numberChar(i - start, rawData[i])) {
+				break;
 			}
 		}
 
