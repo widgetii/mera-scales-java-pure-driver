@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
 import static ru.aplix.mera.scales.ScalesStatus.SCALES_CONNECTED;
 import static ru.aplix.mera.scales.ScalesStatus.SCALES_ERROR;
+import static ru.aplix.mera.scales.ap.AutoProtocol.AUTO_PROTOCOL;
 import static ru.aplix.mera.scales.byte9.Byte9Protocol.BYTE9_PROTOCOL;
 
 import org.junit.After;
@@ -32,6 +33,12 @@ public class ScalesServiceTest {
 	public void byte9Discovered() {
 		this.service.getScalesPortIds();
 		this.service.checkProtocolDiscovered(BYTE9_PROTOCOL);
+	}
+
+	@Test
+	public void apDiscovered() {
+		this.service.getScalesPortIds();
+		this.service.checkProtocolDiscovered(AUTO_PROTOCOL);
 	}
 
 	@Test
