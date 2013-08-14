@@ -43,7 +43,8 @@ final class DefaultWeightSteadinessPolicy implements WeightSteadinessPolicy {
 
 			this.lastUpdates.add(weightUpdate);
 
-			return weightIsSteady ? weightUpdate.getWeight() : -1;
+			return weightIsSteady
+					? weightUpdate.getWeight() : NON_STEADY_WEIGHT;
 		}
 
 		@Override

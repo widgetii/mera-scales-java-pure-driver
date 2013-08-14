@@ -1,5 +1,6 @@
 package ru.aplix.mera.scales;
 
+import static ru.aplix.mera.scales.config.WeightSteadinessDetector.NON_STEADY_WEIGHT;
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.scales.backend.WeightUpdate;
 import ru.aplix.mera.scales.backend.WeightUpdateHandle;
@@ -98,7 +99,7 @@ final class WeightUpdatesListener
 
 		final int steadyWeight = this.steadinessDetector.steadyWeight(update);
 
-		if (steadyWeight < 0) {
+		if (steadyWeight == NON_STEADY_WEIGHT) {
 			return false;
 		}
 

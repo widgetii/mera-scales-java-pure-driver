@@ -13,6 +13,8 @@ import ru.aplix.mera.scales.backend.WeightUpdate;
  */
 public interface WeightSteadinessDetector {
 
+	int NON_STEADY_WEIGHT = Integer.MIN_VALUE;
+
 	/**
 	 * Detects the steady weight.
 	 *
@@ -25,14 +27,14 @@ public interface WeightSteadinessDetector {
 	 * {@link WeightUpdate#isSteadyWeight() steady}. The detector should decide
 	 * whether to trust this information.</p>
 	 *
-	 * <p>The returned non-negative value will be used to create a
-	 * {@link WeightMessage weight message}, which will be reported to
-	 * subscribed weight consumers.</p>
+	 * <p>The returned value will be used to create a {@link WeightMessage
+	 * weight message}, which will be reported to subscribed weight consumers.
+	 * </p>
 	 *
 	 * @param weightUpdate the last weight update.
 	 *
-	 * @return steady weight in grams, negative value if the weight is not
-	 * steady yet.
+	 * @return steady weight in grams, or {@link #NON_STEADY_WEIGHT} if the
+	 * weight is not steady yet.
 	 */
 	int steadyWeight(WeightUpdate weightUpdate);
 
