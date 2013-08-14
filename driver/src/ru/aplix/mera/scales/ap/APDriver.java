@@ -82,8 +82,10 @@ public class APDriver implements ScalesDriver, Weighing {
 
 	@Override
 	public synchronized void stopWeighing() {
-		this.weightListener.interrupt();
-		this.weightListener = null;
+		if (this.weightListener != null) {
+			this.weightListener.interrupt();
+			this.weightListener = null;
+		}
 	}
 
 }
