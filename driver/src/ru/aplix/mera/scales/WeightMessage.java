@@ -57,21 +57,21 @@ public class WeightMessage {
 	/**
 	 * Weighing start time.
 	 *
-	 * @return UNIX time of first weight measurement, in milliseconds.
+	 * @return UNIX time of first weight measurement
+	 * {@link WeightUpdate#getWeighingStart() start}, in milliseconds.
 	 */
-	public final long getWeighingTime() {
-		return this.firstUpdate.getWeighingTime();
+	public final long getWeighingStart() {
+		return this.firstUpdate.getWeighingStart();
 	}
 
 	/**
-	 * Weighing duration.
+	 * Weighing end time.
 	 *
-	 * @return duration in milliseconds between the first and the last
-	 * weight measurements.
+	 * @return UNIX time of last weight measurement
+	 * {@link WeightUpdate#getWeighingEnd() end}, in milliseconds.
 	 */
-	public final long getWeighingDuration() {
-		return this.lastUpdate.getWeighingTime()
-				- this.firstUpdate.getWeighingTime();
+	public final long getWeighingEnd() {
+		return this.lastUpdate.getWeighingEnd();
 	}
 
 	@Override

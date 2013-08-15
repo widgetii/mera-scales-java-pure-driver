@@ -133,7 +133,8 @@ public class WeighingButton extends JToggleButton implements PortListener {
 			public void run() {
 				app().log(
 						"Вес: " + w + " Измерен за "
-						+ weight.getWeighingDuration() + " мс");
+						+ (weight.getWeighingEnd() - weight.getWeighingStart())
+						+ " мс");
 				getToolBar().getWeight().setText(w);
 			}
 		});

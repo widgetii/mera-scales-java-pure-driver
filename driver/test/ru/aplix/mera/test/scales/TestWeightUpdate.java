@@ -33,7 +33,17 @@ public class TestWeightUpdate implements WeightUpdate {
 	}
 
 	@Override
+	public long getWeighingStart() {
+		return this.weighingTime;
+	}
+
+	@Override
 	public long getWeighingTime() {
+		return this.weighingTime;
+	}
+
+	@Override
+	public long getWeighingEnd() {
 		return this.weighingTime;
 	}
 

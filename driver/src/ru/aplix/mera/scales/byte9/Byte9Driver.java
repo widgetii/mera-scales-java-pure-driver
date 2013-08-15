@@ -38,6 +38,9 @@ public class Byte9Driver implements ScalesDriver {
 	public WeightUpdate requestWeight(
 			ScalesRequest request)
 	throws Exception {
+
+		final long weighingStart = System.currentTimeMillis();
+
 		try (Byte9Session session = new Byte9Session(request, this.portName)) {
 
 			final Byte9Packet response = session.send(byte9WeightRequest());
@@ -46,7 +49,10 @@ public class Byte9Driver implements ScalesDriver {
 				return null;
 
 			}
-			return new Byte9WeightUpdate(session.getResponseTime(), response);
+			return new Byte9WeightUpdate(
+					weighingStart,
+					session.getResponseTime(),
+					response);
 		}
 	}
 

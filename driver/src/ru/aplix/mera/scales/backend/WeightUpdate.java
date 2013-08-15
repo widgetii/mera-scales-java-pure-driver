@@ -35,10 +35,30 @@ public interface WeightUpdate {
 	int getWeight();
 
 	/**
+	 * The time of weighing operation start.
+	 *
+	 * <p>This can be a time when weighing request sent.</p>
+	 *
+	 * @return UNIX time of weight measurement start, in milliseconds.
+	 */
+	long getWeighingStart();
+
+	/**
 	 * The time of weighing.
+	 *
+	 * <p>This can be a time when of weighing response reception.</p>
 	 *
 	 * @return UNIX time of weight measurement, in milliseconds.
 	 */
 	long getWeighingTime();
+
+	/**
+	 * The time of weighing operation end.
+	 *
+	 * <p>This can be a time when weighing response is fully read.</p>
+	 *
+	 * @return UNIX time of weight measurement start, in milliseconds.
+	 */
+	long getWeighingEnd();
 
 }

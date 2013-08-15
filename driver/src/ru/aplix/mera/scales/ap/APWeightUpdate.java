@@ -12,6 +12,7 @@ public class APWeightUpdate implements WeightUpdate {
 	private static final BigDecimal TWENTY = BigDecimal.valueOf(20);
 
 	private final long weighingTime;
+	private final long weighingEnd;
 	private final int weight;
 	private final boolean steadyWeight;
 
@@ -23,6 +24,7 @@ public class APWeightUpdate implements WeightUpdate {
 				.setScale(0, RoundingMode.HALF_UP)
 				.intValueExact();
 		this.steadyWeight = packet.isSteadyWeight();
+		this.weighingEnd = System.currentTimeMillis();
 	}
 
 	@Override
@@ -36,8 +38,18 @@ public class APWeightUpdate implements WeightUpdate {
 	}
 
 	@Override
+	public long getWeighingStart() {
+		return this.weighingTime;
+	}
+
+	@Override
 	public long getWeighingTime() {
 		return this.weighingTime;
+	}
+
+	@Override
+	public long getWeighingEnd() {
+		return this.weighingEnd;
 	}
 
 }

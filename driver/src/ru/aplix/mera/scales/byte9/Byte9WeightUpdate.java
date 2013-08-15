@@ -7,12 +7,19 @@ import ru.aplix.mera.scales.backend.WeightUpdate;
 
 public class Byte9WeightUpdate implements WeightUpdate {
 
+	private final long weighingStart;
 	private final long weighingTime;
 	private final Byte9Packet packet;
+	private final long weighingEnd;
 
-	public Byte9WeightUpdate(long weighingTime, Byte9Packet packet) {
+	public Byte9WeightUpdate(
+			long weighingStart,
+			long weighingTime,
+			Byte9Packet packet) {
+		this.weighingStart = weighingStart;
 		this.weighingTime = weighingTime;
 		this.packet = packet;
+		this.weighingEnd = System.currentTimeMillis();
 	}
 
 	@Override
@@ -26,8 +33,18 @@ public class Byte9WeightUpdate implements WeightUpdate {
 	}
 
 	@Override
+	public long getWeighingStart() {
+		return this.weighingStart;
+	}
+
+	@Override
 	public long getWeighingTime() {
 		return this.weighingTime;
+	}
+
+	@Override
+	public long getWeighingEnd() {
+		return this.weighingEnd;
 	}
 
 	@Override
