@@ -23,7 +23,7 @@ final class DefaultWeightSteadinessPolicy implements WeightSteadinessPolicy {
 	private static final long STEADINESS_DELAY = 5432L;
 
 	@Override
-	public WeightSteadinessDetector startSteadinessDetection(ScalesPort port) {
+	public WeightSteadinessDetector createSteadinessDetector(ScalesPort port) {
 		return new DefaultWeightSteadinessDetector();
 	}
 
@@ -48,10 +48,14 @@ final class DefaultWeightSteadinessPolicy implements WeightSteadinessPolicy {
 		}
 
 		@Override
-		public boolean weightChanged(
+		public WeightSteadinessDetector weightChanged(
 				WeightMessage steadyWeight,
 				WeightUpdate weightUpdate) {
-			return steadyWeight.getWeight() != weightUpdate.getWeight();
+			if (steadyWeight.getWeight() == weightUpdate.getWeight()) {
+				return null;
+			}
+			this.lastUpdates.clear();
+			return this;
 		}
 
 		private boolean checkSteadiness(WeightUpdate weightUpdate) {

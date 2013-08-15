@@ -44,6 +44,10 @@ public class CyclicBuffer<T> {
 		return this.items[this.length - 1];
 	}
 
+	public final void clear() {
+		this.length = 0;
+	}
+
 	@Override
 	public String toString() {
 		if (this.items == null) {

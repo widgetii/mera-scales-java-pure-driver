@@ -1,15 +1,19 @@
 package ru.aplix.mera.scales.config;
 
 import ru.aplix.mera.scales.WeightMessage;
+import ru.aplix.mera.scales.backend.Weighing;
 import ru.aplix.mera.scales.backend.WeightUpdate;
 
 
 /**
  * Weight steadiness detector.
  *
- * <p>An instance of this class is created by {@link WeightSteadinessPolicy
- * weight steadiness policy}. It is responsible for collecting the weight
- * updates if necessary, and for reporting whether the weight is steady.</p>
+ * <p>It is responsible for collecting the weight updates if necessary, and for
+ * reporting whether the weight is steady.</p>
+ *
+ * <p>The implementation does't have to be thread-safe, as usually only one
+ * weight update is handled at a time. Unless a {@link Weighing} implemented
+ * otherwise.</p>
  */
 public interface WeightSteadinessDetector {
 
@@ -47,20 +51,17 @@ public interface WeightSteadinessDetector {
 	 * indicating that the scales have been loaded or unloaded, e.g. when
 	 * the load have been removed from the scales.</p>
 	 *
-	 * <p>After this method returns <code>true</code>, this detector instance
-	 * will be disposed, and a new one will be
-	 * {@link WeightSteadinessPolicy#startSteadinessDetection(
-	 * ru.aplix.mera.scales.ScalesPort) created} to start the weight steadiness
-	 * detection over.</p>
+	 * <p>After this method returns a detector instance, it will replace a
+	 * new one, ant the weight steadiness detection will start over over.</p>
 	 *
 	 * @param steadyWeight the last reported steady weight message, containing
 	 * the steady weight returned by {@link #steadyWeight(WeightUpdate)} method.
 	 * @param weightUpdate the last weight update.
 	 *
-	 * @return <code>true</code> if weight have changed significantly, or
-	 * <code>false</code> otherwise.
+	 * @return new detector if weight have changed significantly, or
+	 * <code>null</code> otherwise.
 	 */
-	boolean weightChanged(
+	WeightSteadinessDetector weightChanged(
 			WeightMessage steadyWeight,
 			WeightUpdate weightUpdate);
 

@@ -78,6 +78,7 @@ public class ScalesPort
 
 		lock.lock();
 		try {
+			this.weightListener.configUpdated();
 			this.status = null;
 			backend().setConfig(config);
 		} finally {

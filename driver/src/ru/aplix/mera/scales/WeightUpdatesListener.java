@@ -5,6 +5,7 @@ import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.scales.backend.WeightUpdate;
 import ru.aplix.mera.scales.backend.WeightUpdateHandle;
 import ru.aplix.mera.scales.config.WeightSteadinessDetector;
+import ru.aplix.mera.scales.config.WeightSteadinessPolicy;
 
 
 final class WeightUpdatesListener
@@ -13,6 +14,7 @@ final class WeightUpdatesListener
 	private final ScalesPort port;
 	private int started = 0;
 	private WeightUpdateHandle handle;
+	private WeightSteadinessPolicy steadinessPolicy;
 	private WeightSteadinessDetector steadinessDetector;
 	private WeightMessage steadyWeight;
 
@@ -59,22 +61,29 @@ final class WeightUpdatesListener
 	public void consumerUnubscribed(WeightUpdateHandle handle) {
 	}
 
+	final synchronized void configUpdated() {
+
+		final WeightSteadinessPolicy steadinessPolicy =
+				this.port.getConfig().getWeightSteadinessPolicy();
+
+		if (steadinessPolicy == this.steadinessPolicy) {
+			return;
+		}
+
+		this.steadinessPolicy = steadinessPolicy;
+		this.steadinessDetector =
+				steadinessPolicy.createSteadinessDetector(this.port);
+		this.steadyWeight = null;
+	}
+
 	private void checkLoad(WeightUpdate update) {
-		if (this.steadinessDetector != null
-				&& !this.steadinessDetector.weightChanged(
-						this.steadyWeight,
-						update)) {
+		if (!weightChanged(update)) {
 			return;
 		}
 
 		final WeightMessage steadyWeight = getSteadyWeight();
 
 		this.steadyWeight = null;
-		this.steadinessDetector =
-				this.port.getConfig()
-				.getWeightSteadinessPolicy()
-				.startSteadinessDetection(this.port);
-
 		if (checkSteadiness(update)) {
 			return;
 		}
@@ -93,6 +102,33 @@ final class WeightUpdatesListener
 
 		this.port.loadSubscriptions()
 		.sendMessage(new LoadMessage(update, loaded));
+	}
+
+	private synchronized boolean weightChanged(WeightUpdate update) {
+		if (this.steadinessDetector != null) {
+
+			final WeightSteadinessDetector newDetector =
+					this.steadinessDetector.weightChanged(
+							this.steadyWeight,
+							update);
+
+			if (newDetector == null) {
+				return false;
+			}
+
+			this.steadinessDetector = newDetector;
+
+			return true;
+		}
+
+		final WeightSteadinessPolicy steadinessPolicy =
+				this.port.getConfig().getWeightSteadinessPolicy();
+
+		this.steadinessPolicy = steadinessPolicy;
+		this.steadinessDetector =
+				steadinessPolicy.createSteadinessDetector(this.port);
+
+		return true;
 	}
 
 	private boolean checkSteadiness(WeightUpdate update) {
