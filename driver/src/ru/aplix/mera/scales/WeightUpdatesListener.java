@@ -40,6 +40,8 @@ final class WeightUpdatesListener
 		if (--this.started == 0) {
 			this.handle.unsubscribe();
 			this.handle = null;
+			this.steadyWeight = null;
+			this.steadinessDetector = null;
 		}
 	}
 
@@ -62,6 +64,9 @@ final class WeightUpdatesListener
 	}
 
 	final synchronized void configUpdated() {
+		if (this.started == 0) {
+			return;
+		}
 
 		final WeightSteadinessPolicy steadinessPolicy =
 				this.port.getConfig().getWeightSteadinessPolicy();
