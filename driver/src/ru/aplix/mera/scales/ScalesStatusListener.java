@@ -31,7 +31,7 @@ final class ScalesStatusListener
 	}
 
 	@Override
-	public synchronized void consumerUnubscribed(ScalesBackendHandle handle) {
+	public void consumerUnsubscribed(ScalesBackendHandle handle) {
 	}
 
 	final ScalesBackendHandle handle() {

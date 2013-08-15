@@ -35,6 +35,6 @@ public interface MeraConsumer<H extends MeraHandle<H, M>, M> {
 	 *
 	 * @param handle revoked subscription handle.
 	 */
-	void consumerUnubscribed(H handle);
+	void consumerUnsubscribed(H handle);
 
 }

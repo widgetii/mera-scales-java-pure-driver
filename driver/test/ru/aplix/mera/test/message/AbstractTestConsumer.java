@@ -50,7 +50,7 @@ public abstract class AbstractTestConsumer<H extends MeraHandle<H, String>>
 	}
 
 	@Override
-	public void consumerUnubscribed(H handle) {
+	public void consumerUnsubscribed(H handle) {
 		assertThat(this.unsubscribed, is(false));
 		assertThat(handle, is(this.handle));
 		this.unsubscribed = true;

@@ -74,7 +74,7 @@ public abstract class MeraHandle<H extends MeraHandle<H, M>, M> {
 	}
 
 	final void unsubscribed() {
-		getConsumer().consumerUnubscribed(self());
+		getConsumer().consumerUnsubscribed(self());
 	}
 
 	final H prev() {

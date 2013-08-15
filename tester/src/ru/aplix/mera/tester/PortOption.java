@@ -72,7 +72,7 @@ public final class PortOption
 	}
 
 	@Override
-	public void consumerUnubscribed(ScalesPortHandle handle) {
+	public void consumerUnsubscribed(ScalesPortHandle handle) {
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public final class PortOption
 		}
 
 		@Override
-		public void consumerUnubscribed(ScalesErrorHandle handle) {
+		public void consumerUnsubscribed(ScalesErrorHandle handle) {
 		}
 
 		private void logStackTrace(Throwable cause) {

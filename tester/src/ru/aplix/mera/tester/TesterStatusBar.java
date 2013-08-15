@@ -77,7 +77,7 @@ public class TesterStatusBar
 	}
 
 	@Override
-	public void consumerUnubscribed(ScalesPortHandle handle) {
+	public void consumerUnsubscribed(ScalesPortHandle handle) {
 	}
 
 	private void updateStatus(ScalesStatusMessage message) {

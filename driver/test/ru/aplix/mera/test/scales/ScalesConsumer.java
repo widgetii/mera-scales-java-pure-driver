@@ -31,7 +31,7 @@ public class ScalesConsumer<H extends MeraHandle<H, M>, M>
 	}
 
 	@Override
-	public void consumerUnubscribed(H handle) {
+	public void consumerUnsubscribed(H handle) {
 	}
 
 	public M nextMessage() {

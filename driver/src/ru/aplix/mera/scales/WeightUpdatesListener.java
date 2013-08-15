@@ -58,7 +58,7 @@ final class WeightUpdatesListener
 	}
 
 	@Override
-	public void consumerUnubscribed(WeightUpdateHandle handle) {
+	public void consumerUnsubscribed(WeightUpdateHandle handle) {
 	}
 
 	final synchronized void configUpdated() {

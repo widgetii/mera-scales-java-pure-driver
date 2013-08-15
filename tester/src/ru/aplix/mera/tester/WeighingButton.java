@@ -83,7 +83,7 @@ public class WeighingButton extends JToggleButton implements PortListener {
 						setLoad(message);
 					}
 					@Override
-					public void consumerUnubscribed(LoadHandle handle) {
+					public void consumerUnsubscribed(LoadHandle handle) {
 					}
 				});
 		this.weightHandle = statusHandle.requestWeight(
@@ -96,7 +96,7 @@ public class WeighingButton extends JToggleButton implements PortListener {
 						setWeight(message);
 					}
 					@Override
-					public void consumerUnubscribed(WeightHandle handle) {
+					public void consumerUnsubscribed(WeightHandle handle) {
 						stopWeighing();
 					}
 				});
