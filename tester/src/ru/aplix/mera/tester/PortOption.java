@@ -2,6 +2,7 @@ package ru.aplix.mera.tester;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,14 +17,14 @@ public final class PortOption
 
 	private final TesterApp app;
 	private final ScalesPortId portId;
-	private final String[] idWords;
+	private final Object[] idWords;
 	private final ScalesErrorListener errorListener;
 	private ScalesPortHandle handle;
 
 	PortOption(TesterApp app) {
 		this.app = app;
 		this.portId = null;
-		this.idWords = new String[0];
+		this.idWords = new Object[0];
 		this.errorListener = null;
 	}
 
@@ -101,13 +102,21 @@ public final class PortOption
 			return protoCmp;
 		}
 
-		final String[] id1 = this.idWords;
-		final String[] id2 = o.idWords;
+		final Object[] id1 = this.idWords;
+		final Object[] id2 = o.idWords;
 		final int len = Math.min(id1.length, id2.length);
 
 		for (int i = 0; i < len; ++i) {
 
-			final int cmp = id1[i].compareTo(id2[i]);
+			final Object w1 = id1[i];
+			final Object w2 = id2[i];
+			final int cmp;
+
+			if (w1 instanceof BigInteger && w2 instanceof BigInteger) {
+				cmp = ((BigInteger) w1).compareTo((BigInteger) w2);
+			} else {
+				cmp = w1.toString().compareTo(w2.toString());
+			}
 
 			if (cmp != 0) {
 				return cmp;
@@ -145,19 +154,7 @@ public final class PortOption
 
 		final PortOption other = (PortOption) obj;
 
-		if (this.portId == null) {
-			if (other.portId != null) {
-				return false;
-			}
-		} else if (!this.portId.getProtocol().equals(
-				other.portId.getProtocol())) {
-			return false;
-		}
-		if (!Arrays.equals(this.idWords, other.idWords)) {
-			return false;
-		}
-
-		return true;
+		return compareTo(other) == 0;
 	}
 
 	@Override
@@ -185,11 +182,11 @@ public final class PortOption
 		}
 	}
 
-	private static String[] splitId(String id) {
+	private static Object[] splitId(String id) {
 
 		final int len = id.length();
 		final StringBuilder word = new StringBuilder(len);
-		ArrayList<String> words = null;
+		ArrayList<Object> words = null;
 		boolean number = false;
 
 		for (int i = 0; i < len; ++i) {
@@ -198,21 +195,21 @@ public final class PortOption
 
 			if (Character.isWhitespace(c)) {
 				if (word.length() != 0) {
-					words = endWord(word, words);
+					words = endWord(word, words, number);
 				}
 				continue;
 			}
 			if (word.length() == 0) {
 				word.append(c);
-				number = Character.isDigit(c);
+				number = isDigit(c);
 				continue;
 			}
-			if (Character.isDigit(c) == number) {
+			if (isDigit(c) == number) {
 				word.append(c);
 				continue;
 			}
+			words = endWord(word, words, number);
 			number = !number;
-			words = endWord(word, words);
 			word.append(c);
 		}
 
@@ -220,24 +217,33 @@ public final class PortOption
 			return new String[] {word.toString()};
 		}
 		if (word.length() != 0) {
-			words = endWord(word, words);
+			words = endWord(word, words, number);
 		}
 
-		return words.toArray(new String[words.size()]);
+		return words.toArray(new Object[words.size()]);
 	}
 
-	private static ArrayList<String> endWord(
-			StringBuilder word,
-			ArrayList<String> words) {
+	private static boolean isDigit(final char c) {
+		return c >= '0' && c <= '9';
+	}
 
-		final ArrayList<String> result;
+	private static ArrayList<Object> endWord(
+			StringBuilder word,
+			ArrayList<Object> words,
+			boolean number) {
+
+		final ArrayList<Object> result;
 
 		if (words == null) {
 			result = new ArrayList<>();
 		} else {
 			result = words;
 		}
-		result.add(word.toString());
+		if (!number) {
+			result.add(word.toString());
+		} else {
+			result.add(new BigInteger(word.toString()));
+		}
 		word.setLength(0);
 
 		return result;
