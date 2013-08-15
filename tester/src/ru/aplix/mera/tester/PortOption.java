@@ -268,7 +268,7 @@ public final class PortOption
 			final Throwable cause = message.getCause();
 
 			if (cause == null) {
-				this.app.log("ERROR: " + message.getErrorMessage());
+				this.app.log("ОШИБКА: " + message.getErrorMessage());
 				return;
 			}
 			logStackTrace(cause);
@@ -284,7 +284,7 @@ public final class PortOption
 			final PrintWriter writer = new PrintWriter(out);
 
 			try {
-				writer.print("ERROR: ");
+				writer.print("ОШИБКА: ");
 				cause.printStackTrace(writer);
 			} finally {
 				writer.close();
