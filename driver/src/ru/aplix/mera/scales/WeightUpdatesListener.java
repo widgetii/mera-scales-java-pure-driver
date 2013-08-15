@@ -16,6 +16,7 @@ final class WeightUpdatesListener
 	private WeightUpdateHandle handle;
 	private WeightSteadinessPolicy steadinessPolicy;
 	private WeightSteadinessDetector steadinessDetector;
+	private WeightUpdate firstUpdate;
 	private WeightMessage steadyWeight;
 
 	WeightUpdatesListener(ScalesPort port) {
@@ -124,7 +125,7 @@ final class WeightUpdatesListener
 				return false;
 			}
 
-			this.steadinessDetector = newDetector;
+			startWeighing(newDetector, update);
 
 			return true;
 		}
@@ -133,22 +134,34 @@ final class WeightUpdatesListener
 				this.port.getConfig().getWeightSteadinessPolicy();
 
 		this.steadinessPolicy = steadinessPolicy;
-		this.steadinessDetector =
-				steadinessPolicy.createSteadinessDetector(this.port);
+		startWeighing(
+				steadinessPolicy.createSteadinessDetector(this.port),
+				update);
 
 		return true;
+	}
+
+	private void startWeighing(
+			WeightSteadinessDetector detector,
+			WeightUpdate firstUpdate) {
+		this.steadinessDetector = detector;
+		this.firstUpdate = firstUpdate;
 	}
 
 	private boolean checkSteadiness(WeightUpdate update) {
 		synchronized (this) {
 
-			final int steadyWeight = this.steadinessDetector.steadyWeight(update);
+			final int steadyWeight =
+					this.steadinessDetector.steadyWeight(update);
 
 			if (steadyWeight == NON_STEADY_WEIGHT) {
 				return false;
 			}
 
-			this.steadyWeight = new WeightMessage(steadyWeight);
+			this.steadyWeight = new WeightMessage(
+					steadyWeight,
+					this.firstUpdate,
+					update);
 		}
 
 		this.port.weightSubscriptions().sendMessage(this.steadyWeight);

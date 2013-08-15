@@ -10,11 +10,17 @@ import ru.aplix.mera.scales.backend.WeightUpdate;
  * <p>It is responsible for collecting the weight updates if necessary, and for
  * reporting whether the weight is steady.</p>
  *
- * <p>The weight updates are handled sequentially, one at a time. The
- * implementation is not required to be thread-safe.</p>
+ * <p>The weight updates are handled sequentially, one at a time.
+ * Implementations are not required to be thread-safe.</p>
  */
 public interface WeightSteadinessDetector {
 
+	/**
+	 * Non-steady weigh indicator.
+	 *
+	 * <p>Return this value from {@link #steadyWeight(WeightUpdate)} method to
+	 * indicate that the weight is not steady yet.</p>
+	 */
 	int NON_STEADY_WEIGHT = Integer.MIN_VALUE;
 
 	/**

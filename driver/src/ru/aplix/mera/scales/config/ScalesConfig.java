@@ -64,8 +64,8 @@ public final class ScalesConfig
 	 *
 	 * <p>The default policy considers the weight is steady when the three
 	 * subsequent weight updates contain the same weight value, or when the
-	 * time since the last update is out. I also trust the weight updates
-	 * {@link WeightUpdate#isSteadyWeight() steadiness}.</p>
+	 * time since the last update is out. I also respects the weight updates
+	 * {@link WeightUpdate#isSteadyWeight() steadiness} information.</p>
 	 */
 	public static final ScalesOption<WeightSteadinessPolicy>
 	WEIGHT_STEADINESS_POLICY =
