@@ -2,6 +2,8 @@ package ru.aplix.mera.tester;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import ru.aplix.mera.message.MeraConsumer;
 import ru.aplix.mera.scales.*;
@@ -14,18 +16,21 @@ public final class PortOption
 
 	private final TesterApp app;
 	private final ScalesPortId portId;
+	private final String[] idWords;
 	private final ScalesErrorListener errorListener;
 	private ScalesPortHandle handle;
 
 	PortOption(TesterApp app) {
 		this.app = app;
 		this.portId = null;
+		this.idWords = new String[0];
 		this.errorListener = null;
 	}
 
 	PortOption(TesterApp app, ScalesPortId portId) {
 		this.app = app;
 		this.portId = portId;
+		this.idWords = splitId(portId.getPortId());
 		this.errorListener = new ScalesErrorListener(app);
 	}
 
@@ -96,12 +101,34 @@ public final class PortOption
 			return protoCmp;
 		}
 
-		return pid1.getPortId().compareTo(pid2.getPortId());
+		final String[] id1 = this.idWords;
+		final String[] id2 = o.idWords;
+		final int len = Math.min(id1.length, id2.length);
+
+		for (int i = 0; i < len; ++i) {
+
+			final int cmp = id1[i].compareTo(id2[i]);
+
+			if (cmp != 0) {
+				return cmp;
+			}
+		}
+
+		return id1.length - id2.length;
 	}
 
 	@Override
 	public int hashCode() {
-		return this.portId == null ? 0 : this.portId.hashCode();
+		if (this.portId == null) {
+			return 0;
+		}
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + this.portId.getProtocol().hashCode();
+		result = prime * result + Arrays.hashCode(this.idWords);
+
+		return result;
 	}
 
 	@Override
@@ -122,7 +149,11 @@ public final class PortOption
 			if (other.portId != null) {
 				return false;
 			}
-		} else if (!this.portId.equals(other.portId)) {
+		} else if (!this.portId.getProtocol().equals(
+				other.portId.getProtocol())) {
+			return false;
+		}
+		if (!Arrays.equals(this.idWords, other.idWords)) {
 			return false;
 		}
 
@@ -152,6 +183,64 @@ public final class PortOption
 		if (newConfig != oldConfig) {
 			port.setConfig(newConfig);
 		}
+	}
+
+	private static String[] splitId(String id) {
+
+		final int len = id.length();
+		final StringBuilder word = new StringBuilder(len);
+		ArrayList<String> words = null;
+		boolean number = false;
+
+		for (int i = 0; i < len; ++i) {
+
+			final char c = id.charAt(i);
+
+			if (Character.isWhitespace(c)) {
+				if (word.length() != 0) {
+					words = endWord(word, words);
+				}
+				continue;
+			}
+			if (word.length() == 0) {
+				word.append(c);
+				number = Character.isDigit(c);
+				continue;
+			}
+			if (Character.isDigit(c) == number) {
+				word.append(c);
+				continue;
+			}
+			number = !number;
+			words = endWord(word, words);
+			word.append(c);
+		}
+
+		if (words == null) {
+			return new String[] {word.toString()};
+		}
+		if (word.length() != 0) {
+			words = endWord(word, words);
+		}
+
+		return words.toArray(new String[words.size()]);
+	}
+
+	private static ArrayList<String> endWord(
+			StringBuilder word,
+			ArrayList<String> words) {
+
+		final ArrayList<String> result;
+
+		if (words == null) {
+			result = new ArrayList<>();
+		} else {
+			result = words;
+		}
+		result.add(word.toString());
+		word.setLength(0);
+
+		return result;
 	}
 
 	private static final class ScalesErrorListener
