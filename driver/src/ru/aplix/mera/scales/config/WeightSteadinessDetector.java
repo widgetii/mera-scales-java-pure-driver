@@ -1,7 +1,6 @@
 package ru.aplix.mera.scales.config;
 
 import ru.aplix.mera.scales.WeightMessage;
-import ru.aplix.mera.scales.backend.Weighing;
 import ru.aplix.mera.scales.backend.WeightUpdate;
 
 
@@ -11,9 +10,8 @@ import ru.aplix.mera.scales.backend.WeightUpdate;
  * <p>It is responsible for collecting the weight updates if necessary, and for
  * reporting whether the weight is steady.</p>
  *
- * <p>The implementation does't have to be thread-safe, as usually only one
- * weight update is handled at a time. Unless a {@link Weighing} implemented
- * otherwise.</p>
+ * <p>The weight updates are handled sequentially, one at a time. The
+ * implementation is not required to be thread-safe.</p>
  */
 public interface WeightSteadinessDetector {
 

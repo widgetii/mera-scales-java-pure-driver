@@ -77,15 +77,18 @@ final class WeightUpdatesListener
 	}
 
 	private void checkLoad(WeightUpdate update) {
-		if (!weightChanged(update)) {
-			return;
-		}
 
-		final WeightMessage steadyWeight = getSteadyWeight();
+		final WeightMessage steadyWeight;
 
-		this.steadyWeight = null;
-		if (checkSteadiness(update)) {
-			return;
+		synchronized (this) {
+			if (!weightChanged(update)) {
+				return;
+			}
+			steadyWeight = getSteadyWeight();
+			this.steadyWeight = null;
+			if (checkSteadiness(update)) {
+				return;
+			}
 		}
 
 		final int weight = update.getWeight();
@@ -104,7 +107,7 @@ final class WeightUpdatesListener
 		.sendMessage(new LoadMessage(update, loaded));
 	}
 
-	private synchronized boolean weightChanged(WeightUpdate update) {
+	private boolean weightChanged(WeightUpdate update) {
 		if (this.steadinessDetector != null) {
 
 			final WeightSteadinessDetector newDetector =
@@ -132,14 +135,17 @@ final class WeightUpdatesListener
 	}
 
 	private boolean checkSteadiness(WeightUpdate update) {
+		synchronized (this) {
 
-		final int steadyWeight = this.steadinessDetector.steadyWeight(update);
+			final int steadyWeight = this.steadinessDetector.steadyWeight(update);
 
-		if (steadyWeight == NON_STEADY_WEIGHT) {
-			return false;
+			if (steadyWeight == NON_STEADY_WEIGHT) {
+				return false;
+			}
+
+			this.steadyWeight = new WeightMessage(steadyWeight);
 		}
 
-		this.steadyWeight = new WeightMessage(steadyWeight);
 		this.port.weightSubscriptions().sendMessage(this.steadyWeight);
 
 		return true;
