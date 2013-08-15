@@ -37,7 +37,7 @@ public class Byte9Device implements ScalesDevice {
 		if (!this.deviceType.isUnknown()) {
 			return this.deviceType.id();
 		}
-		if (isDevicePacket()) {
+		if (!isDevicePacket()) {
 			return this.deviceType.id();
 		}
 		return this.deviceType.id() +
