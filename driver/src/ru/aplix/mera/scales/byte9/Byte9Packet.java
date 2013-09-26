@@ -9,8 +9,6 @@ import static ru.aplix.mera.scales.byte9.Byte9Validity.byte9LengthValidity;
 
 import java.util.Objects;
 
-import ru.aplix.mera.util.CRC8;
-
 
 /**
  * Byte9 protocol packed.
@@ -139,10 +137,13 @@ public class Byte9Packet {
 	 * @return actual packet data CRC.
 	 */
 	public final byte calculateCRC() {
-
 		final int len = Math.min(7, this.rawData.length);
 
-		return CRC8.calcCRC8(this.rawData, 0, len);
+		byte result = 0;
+		for (int i = 0; i < len; ++i) {
+			result = (byte) (result + this.rawData[i]);
+		}
+		return result;
 	}
 
 	/**
@@ -169,8 +170,8 @@ public class Byte9Packet {
 	 *
 	 * @return CRC stored in byte <code>#7</code>.
 	 */
-	public final int crcByte() {
-		return this.rawData[7] & 0xff;
+	public final byte crcByte() {
+		return this.rawData[7];
 	}
 
 	/**
@@ -196,10 +197,7 @@ public class Byte9Packet {
 			return byte9LengthValidity(this.rawData.length);
 		}
 
-		// TODO: It looks like control sum algorithm is not CRC.
-		// Disable it for now.
-		// final boolean crcError = calculateCRC() != crcByte();
-		final boolean crcError = false;
+		final boolean crcError = calculateCRC() != crcByte();
 		final boolean wrongTerminator =
 				this.rawData[8] != BYTE9_TERMINATOR_BYTE;
 

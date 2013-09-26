@@ -4,7 +4,6 @@ import static ru.aplix.mera.scales.ap.APStatusUpdate.AP_DISCONNECTED;
 import ru.aplix.mera.scales.ThrowableErrorMessage;
 import ru.aplix.mera.scales.backend.*;
 
-
 public class APDriver implements ScalesDriver, Weighing {
 
 	private final APDevice device;
@@ -35,9 +34,7 @@ public class APDriver implements ScalesDriver, Weighing {
 	}
 
 	@Override
-	public ScalesStatusUpdate requestStatus(
-			ScalesRequest request)
-	throws Exception {
+	public ScalesStatusUpdate requestStatus(ScalesRequest request) throws Exception {
 		synchronized (this) {
 			if (this.weightListener != null) {
 				return new APStatusUpdate(getDevice());
@@ -102,8 +99,10 @@ public class APDriver implements ScalesDriver, Weighing {
 	}
 
 	private void stop() {
-		this.weightListener.interrupt();
-		this.weightListener = null;
+		if (this.weightListener != null) {
+			this.weightListener.interrupt();
+			this.weightListener = null;
+		}
 	}
 
 }
