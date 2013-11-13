@@ -24,7 +24,6 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 
 	@Override
 	public void run() {
-
 		final ScalesRequest request = new ScalesRequest(this.backend);
 		final WeightUpdate weightUpdate;
 
@@ -68,15 +67,20 @@ final class PeriodicalWeighing implements Weighing, Runnable {
 	}
 
 	private void schedule() {
-		this.future = this.backend.executor().scheduleAtFixedRate(
-				this,
-				0,
-				this.backend.getConfig().getWeighingPeriod(),
-				TimeUnit.MILLISECONDS);
+		if (this.future == null) {
+			this.future = this.backend.executor().scheduleAtFixedRate(
+					this,
+					0,
+					this.backend.getConfig().getWeighingPeriod(),
+					TimeUnit.MILLISECONDS);
+		}
 	}
 
 	private void cancel() {
-		this.future.cancel(false);
+		if (this.future != null) {
+			this.future.cancel(false);
+			this.future = null;
+		}
 		this.backend.interrupt();
 	}
 

@@ -139,11 +139,11 @@ public class Byte9Packet {
 	public final byte calculateCRC() {
 		final int len = Math.min(7, this.rawData.length);
 
-		byte result = 0;
+		int result = 0;
 		for (int i = 0; i < len; ++i) {
-			result = (byte) (result + this.rawData[i]);
+			result += this.rawData[i];
 		}
-		return result;
+		return (byte) (result & 0xFF);
 	}
 
 	/**

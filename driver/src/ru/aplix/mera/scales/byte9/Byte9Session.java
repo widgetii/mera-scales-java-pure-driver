@@ -111,6 +111,10 @@ final class Byte9Session implements AutoCloseable {
 
 		final byte[] rawData = packet.rawData();
 
+		final ScalesConfig config = this.scalesRequest.getConfig();
+		final int responseTimeout =
+				config.get(BYTE9_RESPONSE_TIMEOUT).intValue();
+		this.port.enableReceiveTimeout(responseTimeout);
 		this.port.setSerialPortParams(ADDRESS_PARAMS);
 		this.port.getOutputStream().write(rawData, 0, 3);
 		if (listener.waitForResponse(dataDelay)) {
@@ -140,7 +144,6 @@ final class Byte9Session implements AutoCloseable {
 		return response;
 	}
 
-	@SuppressWarnings("resource")
 	private byte[] readResponseData(
 			ResponseListener listener)
 	throws IOException {
@@ -154,11 +157,16 @@ final class Byte9Session implements AutoCloseable {
 				return null;
 			}
 
-			final int read = in.read();
-
-			if (read < 0) {
+			final int read;
+			try {
+				read = in.read();
+				if (read < 0) {
+					continue;
+				}
+			} catch (IOException ioe) {
 				break;
 			}
+			
 			response[responseLen++] = (byte) read;
 			if (responseLen >= response.length) {
 				break;
