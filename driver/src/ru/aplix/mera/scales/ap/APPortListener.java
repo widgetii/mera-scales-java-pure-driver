@@ -8,19 +8,23 @@ import static ru.aplix.mera.scales.ap.APPacket.AP_TERMINATOR_BYTE;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_NAME;
 import static ru.aplix.mera.scales.ap.AutoProtocol.AP_CONNECTION_TIMEOUT;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import purejavacomm.*;
+import purejavacomm.CommPortIdentifier;
+import purejavacomm.SerialPort;
+import purejavacomm.SerialPortEvent;
+import purejavacomm.SerialPortEventListener;
+import purejavacomm.SerialPortMode;
 import ru.aplix.mera.scales.ThrowableErrorMessage;
 import ru.aplix.mera.scales.backend.InterruptAction;
 import ru.aplix.mera.scales.config.ScalesConfig;
 
-
 class APPortListener implements SerialPortEventListener, InterruptAction {
 
-	private static final SerialPortMode PORT_MODE =
-			DEFAULT_SERIAL_PORT_MODE.setBaudRate(115200);
+	private static final SerialPortMode PORT_MODE = DEFAULT_SERIAL_PORT_MODE
+			.setBaudRate(115200);
 
 	private final APDriver driver;
 	private final boolean reportWeight;
@@ -35,6 +39,7 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 		this.port = openPort();
 		this.port.addEventListener(this);
 		this.port.notifyOnDataAvailable(true);
+		this.port.enableReceiveTimeout(200);
 	}
 
 	public final SerialPort getPort() {
@@ -142,7 +147,6 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 		return new APPacket(rawData);
 	}
 
-	@SuppressWarnings("resource")
 	private byte[] readData() throws Exception {
 		if (doneIfInterrupted()) {
 			return null;
@@ -158,11 +162,16 @@ class APPortListener implements SerialPortEventListener, InterruptAction {
 				return null;
 			}
 
-			final int read = in.read();
-
-			if (read < 0) {
+			final int read;
+			try {
+				read = in.read();
+				if (read < 0) {
+					continue;
+				}
+			} catch (IOException ioe) {
 				break;
 			}
+
 			response[responseLen++] = (byte) read;
 			if (responseLen >= response.length) {
 				break;

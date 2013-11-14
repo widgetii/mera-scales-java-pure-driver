@@ -92,7 +92,9 @@ public class APDriver implements ScalesDriver, Weighing {
 
 	private void start() {
 		try {
-			this.weightListener = new APPortListener(this, true);
+			if (this.weightListener == null) {
+				this.weightListener = new APPortListener(this, true);
+			}
 		} catch (Throwable e) {
 			getWeightReceiver().error(new ThrowableErrorMessage(e));
 		}
